@@ -1,8 +1,19 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
+    <RootNamespace>Tekook.BackupR</RootNamespace>
+    <StartupObject>Tekook.BackupR.Program</StartupObject>
+    <AssemblyName>Tekook.BackupR</AssemblyName>
+    <Version>0.0.1</Version>
+    <Description>Backup Generater and Manager</Description>
+    <Copyright>Julian Tekook 2020</Copyright>
+    <PackageProjectUrl>https://github.com/tekook/BackupR</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tekook/BackupR.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>backupr,backup,manager,generator,backupcreator</PackageTags>
+    <PackageReleaseNotes>Initial Version</PackageReleaseNotes>
   </PropertyGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BackupR
+namespace Tekook.BackupR
 {
     class Program
     {
