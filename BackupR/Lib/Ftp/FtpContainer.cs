@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Tekook.BackupR.Lib.Contracts;
 
 namespace Tekook.BackupR.Lib.Ftp
@@ -10,7 +11,7 @@ namespace Tekook.BackupR.Lib.Ftp
 
         IEnumerable<IContainer> IContainer.Containers => this.Containers;
 
-        public IList<FtpItem> Items { get; } = new List<FtpItem>();
+        public List<FtpItem> Items { get; } = new List<FtpItem>();
 
         IEnumerable<IItem> IContainer.Items => (IList<IItem>)this.Items;
 
@@ -19,6 +20,8 @@ namespace Tekook.BackupR.Lib.Ftp
         public FTPProvider Provider { get; }
 
         IProvider IContainer.Provider => this.Provider;
+
+        public long Size => this.Items.Sum(x => x.Size);
 
         public FtpContainer(FTPProvider provider, string path)
         {
