@@ -5,9 +5,12 @@ namespace Tekook.BackupR.Lib.Contracts
 {
     public interface IItem
     {
-        public IContainer Container { get; }
-        public DateTime Date { get; }
-        public string Name { get; }
-        public long Size { get; }
+        IContainer Container { get; }
+        DateTime Date { get; }
+        string FullName { get; }
+        string Name { get; }
+        long Size { get; }
+
+        Task Delete();
     }
 }

@@ -4,6 +4,8 @@ namespace Tekook.BackupR.Lib.Contracts
 {
     public interface IProvider
     {
-        public Task<IContainer> Read();
+        Task Delete(IItem item);
+
+        Task<IContainer> Read();
     }
 }

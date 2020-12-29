@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
 
 namespace Tekook.BackupR.Lib.Ftp
@@ -10,6 +11,7 @@ namespace Tekook.BackupR.Lib.Ftp
         IContainer IItem.Container => this.Container;
 
         public DateTime Date { get; set; }
+        public string FullName { get; set; }
 
         public string Name { get; set; }
 
@@ -18,6 +20,11 @@ namespace Tekook.BackupR.Lib.Ftp
         public FtpItem(FtpContainer container)
         {
             this.Container = container ?? throw new ArgumentNullException(nameof(container));
+        }
+
+        public async Task Delete()
+        {
+            await this.Container.Provider.Delete(this);
         }
     }
 }

@@ -15,6 +15,15 @@ namespace Tekook.BackupR.Lib.Ftp
             this.Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
+        public async Task Delete(IItem item)
+        {
+            if (item.Container.Provider != this)
+            {
+                throw new InvalidOperationException($"Invalid {nameof(IItem)} provided. (Invalid {nameof(IProvider)})");
+            }
+            await this.Client.DeleteFileAsync(item.FullName);
+        }
+
         public void Dispose()
         {
             this.Client?.Dispose();
@@ -23,8 +32,8 @@ namespace Tekook.BackupR.Lib.Ftp
         public async Task<IContainer> Read()
         {
             this.Client = new FtpClient(this.Config.Host);
-            var creds =this.Config.GetNetworkCredential();
-            if(creds != null)
+            var creds = this.Config.GetNetworkCredential();
+            if (creds != null)
             {
                 this.Client.Credentials = creds;
             }
@@ -43,7 +52,8 @@ namespace Tekook.BackupR.Lib.Ftp
                     {
                         Date = await this.Client.GetModifiedTimeAsync(item.FullName),
                         Name = item.Name,
-                        Size = await this.Client.GetFileSizeAsync(item.FullName)
+                        FullName = item.FullName,
+                        Size = await this.Client.GetFileSizeAsync(item.FullName),
                     });
                 }
                 else if (item.Type == FtpFileSystemObjectType.Directory)

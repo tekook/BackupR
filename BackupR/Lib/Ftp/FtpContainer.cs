@@ -13,7 +13,7 @@ namespace Tekook.BackupR.Lib.Ftp
 
         public List<FtpItem> Items { get; } = new List<FtpItem>();
 
-        IEnumerable<IItem> IContainer.Items => (IList<IItem>)this.Items;
+        IEnumerable<IItem> IContainer.Items => this.Items;
 
         public string Name { get; }
         public string Path { get; }
