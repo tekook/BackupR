@@ -21,7 +21,7 @@ namespace Tekook.BackupR.Lib.Ftp
 
         IProvider IContainer.Provider => this.Provider;
 
-        public long Size => this.Items.Sum(x => x.Size);
+        public long Size => this.Items.Sum(x => x.Size) + this.Containers.Sum(x => x.Size);
 
         public FtpContainer(FTPProvider provider, string path)
         {
