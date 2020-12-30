@@ -19,7 +19,7 @@ namespace Tekook.BackupR
                 Username = "docker-dev",
                 Password = "docker-dev"
             };
-            FTPProvider provider = new FTPProvider(config);
+            FtpProvider provider = new FtpProvider(config);
             IContainer root = await provider.Read();
             long max = 1024 * 1024 * 1024;
             foreach (IContainer sub in root.Containers)
@@ -36,7 +36,7 @@ namespace Tekook.BackupR
                     }
                     foreach (var item in toDelete)
                     {
-                        Console.WriteLine($"Deleting {item.FullName} -> {item.Size.ToReadableBytes()}");
+                        Console.WriteLine($"Deleting {item.Path} -> {item.Size.ToReadableBytes()}");
                         await item.Delete();
                     }
                 }

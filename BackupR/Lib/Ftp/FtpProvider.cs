@@ -5,30 +5,45 @@ using Tekook.BackupR.Lib.Contracts;
 
 namespace Tekook.BackupR.Lib.Ftp
 {
-    public class FTPProvider : IProvider, IDisposable
+    public class FtpProvider : IProvider, IDisposable
     {
+        /// <summary>
+        /// FtpClient this provider uses.
+        /// </summary>
         protected FtpClient Client { get; set; }
+
+        /// <summary>
+        /// Configuration for this provider.
+        /// </summary>
         protected FtpConfig Config { get; set; }
 
-        public FTPProvider(FtpConfig config)
+        /// <summary>
+        /// Creates a new provider.
+        /// </summary>
+        /// <param name="config">Configuration this provider will use.</param>
+        /// <exception cref="ArgumentNullException">If config is null</exception>
+        public FtpProvider(FtpConfig config)
         {
             this.Config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
+        /// <inheritdoc/>
         public async Task Delete(IItem item)
         {
             if (item.Container.Provider != this)
             {
                 throw new InvalidOperationException($"Invalid {nameof(IItem)} provided. (Invalid {nameof(IProvider)})");
             }
-            await this.Client.DeleteFileAsync(item.FullName);
+            await this.Client.DeleteFileAsync(item.Path);
         }
 
+        /// <inheritdoc/>
         public void Dispose()
         {
             this.Client?.Dispose();
         }
 
+        /// <inheritdoc/>
         public async Task<IContainer> Read()
         {
             this.Client = new FtpClient(this.Config.Host);
@@ -41,6 +56,11 @@ namespace Tekook.BackupR.Lib.Ftp
             return await GetContainer(this.Config.Path);
         }
 
+        /// <summary>
+        /// Reads the Container via ftp recursivly
+        /// </summary>
+        /// <param name="path">Path to read</param>
+        /// <returns>Read container.</returns>
         private async Task<FtpContainer> GetContainer(string path)
         {
             FtpContainer root = new FtpContainer(this, path);
@@ -52,7 +72,7 @@ namespace Tekook.BackupR.Lib.Ftp
                     {
                         Date = await this.Client.GetModifiedTimeAsync(item.FullName),
                         Name = item.Name,
-                        FullName = item.FullName,
+                        Path = item.FullName,
                         Size = await this.Client.GetFileSizeAsync(item.FullName),
                     });
                 }
