@@ -37,6 +37,11 @@ namespace Tekook.BackupR.Lib
         /// <inheritdoc/>
         IProvider IContainer.Provider => this.Provider;
 
+        /// <summary>
+        /// Size in a readable string.
+        /// </summary>
+        public string ReadableSize => this.Size.ToReadableBytes();
+
         /// <inheritdoc/>
         public long Size => this.Items.Sum(x => x.Size) + this.Containers.Sum(x => x.Size);
 
@@ -50,6 +55,11 @@ namespace Tekook.BackupR.Lib
             this.Provider = provider;
             this.Path = path ?? throw new ArgumentNullException(nameof(path));
             this.Name = System.IO.Path.GetFileName(path);
+        }
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name}:{this.Path} ({this.ReadableSize})";
         }
     }
 }

@@ -44,5 +44,10 @@ namespace Tekook.BackupR.Lib.Ftp
         {
             await this.Container.Provider.Delete(this);
         }
+
+        public override string ToString()
+        {
+            return $"{this.GetType().Name}:{this.Name} ({this.Size.ToReadableBytes()})";
+        }
     }
 }
