@@ -1,6 +1,12 @@
 ﻿{
-  "Host": "ftp.dev.local",
-  "Path": "/",
-  "Username": "docker-dev",
-  "Password": "docker-dev"
+  "Provider": {
+    "Type": "Tekook.BackupR.Lib.Ftp.FtpProvider",
+    "ConfigType": "Tekook.BackupR.Lib.Ftp.IFtpConfig",
+    "Config": {
+      "Host": "ftp.dev.local",
+      "Path": "/",
+      "Username": "docker-dev",
+      "Password": "docker-dev"
+    }
+  }
 }

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib;
+using Tekook.BackupR.Lib.Configs;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Ftp;
 using Tekook.VerbR.Resolvers;
@@ -12,21 +13,21 @@ using Tekook.VerbR.Validators;
 
 namespace Tekook.BackupR.Test
 {
-    internal class TestVerb : VerbR.Verb<TestOptions, IFtpConfig>
+    internal class TestVerb : VerbR.Verb<TestOptions, IConfig<IFtpConfig>>
     {
         public TestVerb(TestOptions options) : base(options)
         {
-            this.Resolver = new ConfigNetResolver<IFtpConfig, TestOptions>((builder) => builder.UseJsonFile(options.Config));
-            this.Validator = new FluentValidator<IFtpConfig>(v =>
+            this.Resolver = new ConfigNetResolver<IConfig<IFtpConfig>, TestOptions>((builder) => builder.UseJsonFile(options.Config));
+            this.Validator = new FluentValidator<IConfig<IFtpConfig>>(v =>
             {
-                v.RuleFor(x => x.Host).NotEmpty();
-                v.RuleFor(x => x.Path).NotEmpty();
+                v.RuleFor(x => x.Provider.Config.Host).NotEmpty();
+                v.RuleFor(x => x.Provider.Config.Path).NotEmpty();
             });
         }
 
         public async override Task<int> InvokeAsync()
         {
-            FtpProvider provider = new FtpProvider(this.Config);
+            FtpProvider provider = new FtpProvider(this.Config.Provider.Config);
             IContainer root = await provider.Read();
             long max = 1024 * 1024 * 1024;
             foreach (IContainer sub in root.Containers)
