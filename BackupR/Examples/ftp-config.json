@@ -1,0 +1,6 @@
+﻿{
+  "Host": "ftp.dev.local",
+  "Path": "/",
+  "Username": "docker-dev",
+  "Password": "docker-dev"
+}

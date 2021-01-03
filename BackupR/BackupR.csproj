@@ -18,11 +18,19 @@
 
   <ItemGroup>
     <PackageReference Include="FluentFTP" Version="33.0.3" />
-    <PackageReference Include="Tekook.CliConfigurator" Version="0.0.3" />
+    <PackageReference Include="Tekook.VerbR" Version="0.0.3" />
+    <PackageReference Include="Tekook.VerbR.Resolvers" Version="0.0.3" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Manager\" />
+    <Folder Include="Test\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Examples\ftp-config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

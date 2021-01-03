@@ -1,5 +1,6 @@
 ﻿using FluentFTP;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
 
@@ -15,14 +16,14 @@ namespace Tekook.BackupR.Lib.Ftp
         /// <summary>
         /// Configuration for this provider.
         /// </summary>
-        protected FtpConfig Config { get; set; }
+        protected IFtpConfig Config { get; set; }
 
         /// <summary>
         /// Creates a new provider.
         /// </summary>
         /// <param name="config">Configuration this provider will use.</param>
         /// <exception cref="ArgumentNullException">If config is null</exception>
-        public FtpProvider(FtpConfig config)
+        public FtpProvider(IFtpConfig config)
         {
             this.Config = config ?? throw new ArgumentNullException(nameof(config));
         }
@@ -47,7 +48,7 @@ namespace Tekook.BackupR.Lib.Ftp
         public async Task<IContainer> Read()
         {
             this.Client = new FtpClient(this.Config.Host);
-            var creds = this.Config.GetNetworkCredential();
+            var creds = this.Config.Username != null && this.Config.Password != null ? new NetworkCredential(this.Config.Username, this.Config.Password) : null;
             if (creds != null)
             {
                 this.Client.Credentials = creds;

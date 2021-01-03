@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Tekook.BackupR.Lib;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Ftp;
+using Config.Net;
 
 namespace Tekook.BackupR
 {
@@ -12,13 +13,9 @@ namespace Tekook.BackupR
     {
         private static async Task Main(string[] args)
         {
-            FtpConfig config = new FtpConfig()
-            {
-                Host = "ftp.dev.local",
-                Path = "/",
-                Username = "docker-dev",
-                Password = "docker-dev"
-            };
+            var builder = new ConfigurationBuilder<IFtpConfig>();
+            builder.UseJsonFile("./Examples/ftp-config.json");
+            IFtpConfig config = builder.Build();
             FtpProvider provider = new FtpProvider(config);
             IContainer root = await provider.Read();
             long max = 1024 * 1024 * 1024;
