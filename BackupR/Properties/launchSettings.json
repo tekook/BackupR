@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BackupR": {
+      "commandName": "Project",
+      "commandLineArgs": "--config=./Examples/ftp-config.json"
+    }
+  }
+}
