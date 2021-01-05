@@ -13,16 +13,18 @@ using Tekook.VerbR.Validators;
 
 namespace Tekook.BackupR.Test
 {
-    internal class TestVerb : VerbR.Verb<TestOptions, IConfig<IFtpConfig>>
+    internal class TestVerb : VerbR.Verb<TestOptions, IConfig>
     {
         public TestVerb(TestOptions options) : base(options)
         {
-            this.Resolver = new ConfigNetResolver<IConfig<IFtpConfig>, TestOptions>((builder) => builder.UseJsonFile(options.Config));
-            this.Validator = new FluentValidator<IConfig<IFtpConfig>>(v =>
-            {
-                v.RuleFor(x => x.Provider.Config.Host).NotEmpty();
-                v.RuleFor(x => x.Provider.Config.Path).NotEmpty();
-            });
+            var firstResolver = new ConfigNetResolver<IConfig, TestOptions>((b) => b.UseJsonFile(options.Config));
+            var config = firstResolver.Resolve(options);
+            Type g = Type.GetType(config.Type);
+            Type g2 = Type.MakeGenericSignatureType(typeof(IConfig<>), new[] { g });
+            Type c = Type.MakeGenericSignatureType(typeof(ConfigurationBuilder<>), new[] { g2 });
+
+            
+            this.Resolver = new ConfigNetResolver<IConfig, TestOptions>((builder) => builder.UseJsonFile(options.Config));
         }
 
         public async override Task<int> InvokeAsync()
