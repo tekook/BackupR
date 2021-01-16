@@ -1,10 +1,11 @@
 ﻿using CommandLine;
+using Tekook.BackupR.Lib.Contracts;
 using Tekook.VerbR.Contracts;
 
-namespace Tekook.BackupR.Test
+namespace Tekook.BackupR.Verbs.Cleanup
 {
-    [Verb("test", isDefault: true)]
-    public class TestOptions : ICanValidateOnly
+    [Verb("cleanup", true)]
+    internal class CleanupOptions : ICanValidateOnly, IOptions
     {
         [Option('c', "config", Required = true)]
         public string Config { get; set; }

@@ -27,6 +27,14 @@ namespace Tekook.BackupR.Lib.Ftp
         {
             this.Config = config ?? throw new ArgumentNullException(nameof(config));
         }
+        /// <summary>
+        /// Creates a new provider.
+        /// </summary>
+        /// <param name="options">Options to create our configuration from.</param>
+        public FtpProvider(IOptions options)
+        {
+            this.Config = Resolver.ResolveConfig<IFtpConfig>(options);
+        }
 
         /// <inheritdoc/>
         public async Task Delete(IItem item)

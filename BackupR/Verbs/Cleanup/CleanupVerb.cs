@@ -1,5 +1,4 @@
 ﻿using Config.Net;
-using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,29 +6,20 @@ using System.Threading.Tasks;
 using Tekook.BackupR.Lib;
 using Tekook.BackupR.Lib.Configs;
 using Tekook.BackupR.Lib.Contracts;
-using Tekook.BackupR.Lib.Ftp;
 using Tekook.VerbR.Resolvers;
-using Tekook.VerbR.Validators;
 
-namespace Tekook.BackupR.Test
+namespace Tekook.BackupR.Verbs.Cleanup
 {
-    internal class TestVerb : VerbR.Verb<TestOptions, IConfig>
+    internal class CleanupVerb : VerbR.Verb<CleanupOptions, IConfig>
     {
-        public TestVerb(TestOptions options) : base(options)
+        public CleanupVerb(CleanupOptions options) : base(options)
         {
-            var firstResolver = new ConfigNetResolver<IConfig, TestOptions>((b) => b.UseJsonFile(options.Config));
-            var config = firstResolver.Resolve(options);
-            Type g = Type.GetType(config.Type);
-            Type g2 = Type.MakeGenericSignatureType(typeof(IConfig<>), new[] { g });
-            Type c = Type.MakeGenericSignatureType(typeof(ConfigurationBuilder<>), new[] { g2 });
-
-            
-            this.Resolver = new ConfigNetResolver<IConfig, TestOptions>((builder) => builder.UseJsonFile(options.Config));
+            this.Resolver = new ConfigNetResolver<IConfig, CleanupOptions>((builder) => builder.UseJsonFile(options.Config));
         }
 
-        public async override Task<int> InvokeAsync()
+        public override async Task<int> InvokeAsync()
         {
-            FtpProvider provider = new FtpProvider(this.Config.Provider.Config);
+            IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
             IContainer root = await provider.Read();
             long max = 1024 * 1024 * 1024;
             foreach (IContainer sub in root.Containers)

@@ -1,6 +1,6 @@
 ﻿{
   "Name": "ftp",
-  "Type": "Tekook.BackupR.Lib.Jobs.IFtpJob",
+  "Type": "Tekook.BackupR.Lib.Ftp.FtpProvider",
   "Provider": {
     "Host": "ftp.dev.local",
     "Path": "/",

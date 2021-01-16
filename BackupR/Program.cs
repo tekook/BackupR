@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tekook.BackupR.Test;
+using Tekook.BackupR.Verbs.Cleanup;
 
 namespace Tekook.BackupR
 {
@@ -23,8 +23,8 @@ namespace Tekook.BackupR
 
         private static async Task Main(string[] args)
         {
-            Parser.Default.ParseArguments<TestOptions>(args)
-                .WithParsed<TestOptions>(o => (new TestVerb(o)).Invoke())
+            Parser.Default.ParseArguments<CleanupOptions>(args)
+                .WithParsed(o => (new CleanupVerb(o)).Invoke())
                 .WithNotParsed(HandleParseError);
         }
     }
