@@ -49,6 +49,7 @@ namespace Tekook.BackupR.Lib.Ftp
         /// <inheritdoc/>
         public void Dispose()
         {
+            this.Client?.Disconnect();
             this.Client?.Dispose();
         }
 
