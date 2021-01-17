@@ -8,7 +8,12 @@ namespace Tekook.BackupR.Lib.Contracts
     public interface IContainer
     {
         /// <summary>
-        /// Child containers.
+        /// List of all containers underlying to this one.
+        /// </summary>
+        IEnumerable<IContainer> AllContainers { get; }
+
+        /// <summary>
+        /// List of direct child containers.
         /// </summary>
         IEnumerable<IContainer> Containers { get; }
 

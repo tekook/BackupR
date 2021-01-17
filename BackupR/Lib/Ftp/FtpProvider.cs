@@ -27,6 +27,7 @@ namespace Tekook.BackupR.Lib.Ftp
         {
             this.Config = config ?? throw new ArgumentNullException(nameof(config));
         }
+
         /// <summary>
         /// Creates a new provider.
         /// </summary>
@@ -71,9 +72,14 @@ namespace Tekook.BackupR.Lib.Ftp
         /// </summary>
         /// <param name="path">Path to read</param>
         /// <returns>Read container.</returns>
-        private async Task<FtpContainer> GetContainer(string path)
+        private async Task<FtpContainer> GetContainer(string path, FtpContainer rootParent = null)
         {
             FtpContainer root = new FtpContainer(this, path);
+            if (rootParent == null)
+            {
+                rootParent = root;
+            }
+            FtpContainer container;
             foreach (FtpListItem item in await this.Client.GetListingAsync(path))
             {
                 if (item.Type == FtpFileSystemObjectType.File)
@@ -88,7 +94,9 @@ namespace Tekook.BackupR.Lib.Ftp
                 }
                 else if (item.Type == FtpFileSystemObjectType.Directory)
                 {
-                    root.Containers.Add(await this.GetContainer(item.FullName));
+                    container = await this.GetContainer(item.FullName, rootParent);
+                    root.Containers.Add(container);
+                    rootParent.AllContainers.Add(container);
                 }
             }
             return root;
