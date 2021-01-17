@@ -40,7 +40,7 @@ namespace Tekook.BackupR.Lib
         /// <summary>
         /// Size in a readable string.
         /// </summary>
-        public string ReadableSize => this.Size.ToReadableBytes();
+        public string ReadableSize => ByteSizeLib.ByteSize.FromBytes(this.Size).ToString();
 
         /// <inheritdoc/>
         public long Size => this.Items.Sum(x => x.Size) + this.Containers.Sum(x => x.Size);

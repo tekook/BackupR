@@ -6,5 +6,12 @@
     "Path": "/",
     "Username": "docker-dev",
     "Password": "docker-dev"
-  }
+  },
+  "Containers": [
+    {
+      "Path": "etc",
+      "MaxSize": "1GB",
+      "MaxFiles":  null
+    }
+  ]
 }

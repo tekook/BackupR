@@ -24,7 +24,7 @@ namespace Tekook.BackupR.Verbs.Cleanup
             long max = 1024 * 1024 * 1024;
             foreach (IContainer sub in root.Containers)
             {
-                Console.WriteLine($"Checking {sub.Name} with Size: {sub.Size.ToReadableBytes()}");
+                Console.WriteLine($"Checking {sub.Name} with Size: {ByteSizeLib.ByteSize.FromBytes(sub.Size)}");
                 if (sub.Size > max)
                 {
                     var files = sub.Items.OrderBy(x => x.Date).ToList();
@@ -36,7 +36,7 @@ namespace Tekook.BackupR.Verbs.Cleanup
                     }
                     foreach (var item in toDelete)
                     {
-                        Console.WriteLine($"Deleting {item.Path} -> {item.Size.ToReadableBytes()}");
+                        Console.WriteLine($"Deleting {item.Path} -> {ByteSizeLib.ByteSize.FromBytes(item.Size)}");
                         await item.Delete();
                     }
                 }

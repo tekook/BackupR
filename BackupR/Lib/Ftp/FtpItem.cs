@@ -47,7 +47,7 @@ namespace Tekook.BackupR.Lib.Ftp
 
         public override string ToString()
         {
-            return $"{this.GetType().Name}:{this.Name} ({this.Size.ToReadableBytes()})";
+            return $"{this.GetType().Name}:{this.Name} ({ByteSizeLib.ByteSize.FromBytes(this.Size)})";
         }
     }
 }
