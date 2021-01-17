@@ -45,8 +45,8 @@ namespace Tekook.BackupR.Verbs.Cleanup
 
         private async Task HandleMaxFiles(IConfigContainer configContainer, IContainer container)
         {
-            Console.WriteLine($"Handling {configContainer.Path} with MaxFiles: {configContainer.MaxFiles}. Current: {container.Items.Count()}");
-            var files = container.Items.OrderBy(x => x.Date).ToList();
+            var files = container.Items.Where(x => !x.Deleted).OrderBy(x => x.Date).ToList();
+            Console.WriteLine($"Handling {configContainer.Path} with MaxFiles: {configContainer.MaxFiles}. Current: {files.Count}");
             var toDelete = new List<IItem>();
             while (files.Count > configContainer.MinFiles && files.Count > configContainer.MaxFiles)
             {
@@ -56,19 +56,18 @@ namespace Tekook.BackupR.Verbs.Cleanup
             foreach (var item in toDelete)
             {
                 Console.WriteLine($"Deleting {item.Path} -> {ByteSize.FromBytes(item.Size)}");
-                //await item.Delete();
+                await item.Delete();
             }
         }
 
         private async Task HandleMaxSize(IConfigContainer configContainer, IContainer container)
         {
             ByteSize max = ByteSize.Parse(configContainer.MaxSize);
-            ByteSize containerSize = ByteSize.FromBytes(container.Size);
+            var files = container.Items.Where(x => !x.Deleted).OrderBy(x => x.Date).ToList();
+            ByteSize containerSize = ByteSize.FromBytes(files.Sum(x => x.Size));
             Console.WriteLine($"Handling {configContainer.Path} with MaxSize: {max}. Current: {containerSize}");
             if (containerSize > max)
-
             {
-                var files = container.Items.OrderBy(x => x.Date).ToList();
                 var toDelete = new List<IItem>();
                 while (files.Sum(x => x.Size) > max.Bytes && files.Count > configContainer.MinFiles)
                 {
@@ -78,7 +77,7 @@ namespace Tekook.BackupR.Verbs.Cleanup
                 foreach (var item in toDelete)
                 {
                     Console.WriteLine($"Deleting {item.Path} -> {ByteSize.FromBytes(item.Size)}");
-                    //await item.Delete();
+                    await item.Delete();
                 }
             }
         }

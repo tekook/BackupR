@@ -21,6 +21,9 @@ namespace Tekook.BackupR.Lib.Ftp
         public DateTime Date { get; set; }
 
         /// <inheritdoc/>
+        public bool Deleted { get; protected set; }
+
+        /// <inheritdoc/>
         public string Name { get; set; }
 
         /// <inheritdoc/>
@@ -43,6 +46,7 @@ namespace Tekook.BackupR.Lib.Ftp
         public async Task Delete()
         {
             await this.Container.Provider.Delete(this);
+            this.Deleted = true;
         }
 
         public override string ToString()

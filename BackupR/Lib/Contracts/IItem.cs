@@ -19,6 +19,11 @@ namespace Tekook.BackupR.Lib.Contracts
         DateTime Date { get; }
 
         /// <summary>
+        /// Determinates if this item has been deleted or not.
+        /// </summary>
+        bool Deleted { get; }
+
+        /// <summary>
         /// Name of the item.
         /// </summary>
         string Name { get; }
