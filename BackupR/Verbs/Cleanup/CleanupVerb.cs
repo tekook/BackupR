@@ -21,6 +21,7 @@ namespace Tekook.BackupR.Verbs.Cleanup
         {
             IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
             IContainer root = await provider.Read();
+
             long max = 1024 * 1024 * 1024;
             foreach (IContainer sub in root.Containers)
             {

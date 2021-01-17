@@ -1,7 +1,10 @@
-﻿namespace Tekook.BackupR.Lib.Configs
+﻿using System.Collections.Generic;
+
+namespace Tekook.BackupR.Lib.Configs
 {
     public interface IConfig
     {
+        List<IConfigContainer> Containers { get; set; }
         string Name { get; set; }
         string Type { get; set; }
     }
