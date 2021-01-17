@@ -11,7 +11,12 @@
     {
       "Path": "etc",
       "MaxSize": "1GB",
-      "MaxFiles":  null
+      "MaxFiles": 10
+    },
+    {
+      "Path": "etc2",
+      "MaxSize": "-1GB",
+      "MaxFiles": null
     }
   ]
 }
