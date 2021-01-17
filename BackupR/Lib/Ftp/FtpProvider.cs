@@ -54,7 +54,7 @@ namespace Tekook.BackupR.Lib.Ftp
         }
 
         /// <inheritdoc/>
-        public async Task<IContainer> Read()
+        public async Task<IContainer> GetRoot()
         {
             this.Client = new FtpClient(this.Config.Host);
             var creds = this.Config.Username != null && this.Config.Password != null ? new NetworkCredential(this.Config.Username, this.Config.Password) : null;

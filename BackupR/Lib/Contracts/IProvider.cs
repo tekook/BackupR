@@ -20,6 +20,6 @@ namespace Tekook.BackupR.Lib.Contracts
         /// Reads the root container of the provider and all its children.
         /// </summary>
         /// <returns>The root container with all child containers and items.</returns>
-        Task<IContainer> Read();
+        Task<IContainer> GetRoot();
     }
 }
