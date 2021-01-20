@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace Tekook.BackupR.Lib.Contracts
@@ -21,5 +22,15 @@ namespace Tekook.BackupR.Lib.Contracts
         /// </summary>
         /// <returns>The root container with all child containers and items.</returns>
         Task<IContainer> GetRoot();
+
+        /// <summary>
+        /// Uploads a file to the specific target container
+        /// </summary>
+        /// <param name="file">File to Upload.</param>
+        /// <param name="target">Target Container,</param>
+        /// <param name="name">Optional name to use on upload.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the container is not derrived from this provider.</exception>
+        /// <returns></returns>
+        Task Upload(FileInfo file, IContainer target, string name = null);
     }
 }

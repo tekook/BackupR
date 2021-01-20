@@ -1,5 +1,6 @@
 ﻿using FluentFTP;
 using System;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
@@ -65,6 +66,16 @@ namespace Tekook.BackupR.Lib.Ftp
             }
             await this.Client.ConnectAsync();
             return await GetContainer(this.Config.Path);
+        }
+
+        /// <inheritdoc/>
+        public async Task Upload(FileInfo file, IContainer target, string name = null)
+        {
+            if (target.Provider != this)
+            {
+                throw new InvalidOperationException("Invalid container provided. Provider does not match!");
+            }
+            await this.Client.UploadAsync(file.OpenRead(), Path.Combine(target.Path, name ?? file.Name));
         }
 
         /// <summary>
