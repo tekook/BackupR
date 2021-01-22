@@ -13,7 +13,9 @@
         "Name": "Home-Backup",
         "Path": "C:\\tmp\\home",
         "Compress": true,
-        "Excludes": []
+        "Excludes": [
+          "C:\\tmp\\asd"
+        ]
       }
     ],
     "Commands": [
