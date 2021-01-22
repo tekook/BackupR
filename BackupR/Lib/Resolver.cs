@@ -1,6 +1,6 @@
 ﻿using Config.Net;
 using System;
-using Tekook.BackupR.Lib.Configs;
+using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.VerbR.Resolvers;
 

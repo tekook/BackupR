@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Tekook.BackupR.Lib.Configs
+namespace Tekook.BackupR.Lib.Config
 {
     public interface IConfig
     {

@@ -1,6 +1,6 @@
 ﻿using Config.Net;
 
-namespace Tekook.BackupR.Lib
+namespace Tekook.BackupR.Lib.Config
 {
     public interface IConfigContainer
     {

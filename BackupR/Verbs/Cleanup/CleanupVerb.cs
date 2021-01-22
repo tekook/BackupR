@@ -4,8 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Tekook.BackupR.Lib;
-using Tekook.BackupR.Lib.Configs;
+using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.VerbR.Resolvers;
 
