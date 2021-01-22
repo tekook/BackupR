@@ -22,7 +22,7 @@ namespace Tekook.BackupR.Verbs.Cleanup
             IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
             IContainer root = await provider.GetRoot();
 
-            foreach (IConfigContainer configContainer in this.Config.Containers)
+            foreach (IContainerConfig configContainer in this.Config.Containers)
             {
                 IContainer container = root.AllContainers.Where(x => x.Path == root.Path + configContainer.Path).FirstOrDefault();
                 if (container == null)
@@ -42,7 +42,7 @@ namespace Tekook.BackupR.Verbs.Cleanup
             return 0;
         }
 
-        private async Task HandleMaxFiles(IConfigContainer configContainer, IContainer container)
+        private async Task HandleMaxFiles(IContainerConfig configContainer, IContainer container)
         {
             var files = container.Items.Where(x => !x.Deleted).OrderBy(x => x.Date).ToList();
             Console.WriteLine($"Handling {configContainer.Path} with MaxFiles: {configContainer.MaxFiles}. Current: {files.Count}");
@@ -59,7 +59,7 @@ namespace Tekook.BackupR.Verbs.Cleanup
             }
         }
 
-        private async Task HandleMaxSize(IConfigContainer configContainer, IContainer container)
+        private async Task HandleMaxSize(IContainerConfig configContainer, IContainer container)
         {
             ByteSize max = ByteSize.Parse(configContainer.MaxSize);
             var files = container.Items.Where(x => !x.Deleted).OrderBy(x => x.Date).ToList();

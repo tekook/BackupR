@@ -2,7 +2,7 @@
 
 namespace Tekook.BackupR.Lib.Config
 {
-    public interface IConfigBackup
+    public interface IBackupConfig
     {
         IEnumerable<IFolderBackup> Folders { get; }
     }

@@ -2,7 +2,7 @@
 
 namespace Tekook.BackupR.Lib.Config
 {
-    public interface IConfigContainer
+    public interface IContainerConfig
     {
         long? MaxFiles { get; }
 
