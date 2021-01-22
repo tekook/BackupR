@@ -23,7 +23,7 @@
         "OutputFile": "C:\\tmp\\script_output.zip"
       }
     ],
-    "Mysqls": [
+    "MysqlBackups": [
       {
         "Name": "Mysql-Backup",
         "MysqlDumpPath": "mysqldump"
