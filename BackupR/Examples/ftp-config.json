@@ -7,28 +7,29 @@
     "Username": "docker-dev",
     "Password": "docker-dev"
   },
-  "Backups": [
-    {
-      "Name": "Home-Backup",
-      "Type": "Tekook.BackupR.Lib.Backups.Folder",
-      "Path": "C:\\tmp\\home",
-      "Compress": true,
-      "Excludes": []
-    },
-    {
-      "Name": "Command-Backup",
-      "Type": "Tekook.BackupR.Lib.Backups.Command",
-      "Command": "powershell C:\\tmp\\script.ps1",
-      "OutputFile":  "C:\\tmp\\script_output.zip"
-    },
-    {
-      "Name": "Mysql-Backup",
-      "Type": "Tekook.BackupR.Lib.Backups.Mysql",
-      "MysqlDumpPath": "mysqldump",
-
-
-    }
-  ],
+  "Backup": {
+    "Folders": [
+      {
+        "Name": "Home-Backup",
+        "Path": "C:\\tmp\\home",
+        "Compress": true,
+        "Excludes": []
+      }
+    ],
+    "Commands": [
+      {
+        "Name": "Command-Backup",
+        "Command": "powershell C:\\tmp\\script.ps1",
+        "OutputFile": "C:\\tmp\\script_output.zip"
+      }
+    ],
+    "Mysqls": [
+      {
+        "Name": "Mysql-Backup",
+        "MysqlDumpPath": "mysqldump"
+      }
+    ]
+  },
   "Containers": [
     {
       "Path": "etc",

@@ -4,13 +4,14 @@ namespace Tekook.BackupR.Lib.Configs
 {
     public interface IConfig
     {
+        IConfigBackup Backup { get; }
         IEnumerable<IConfigContainer> Containers { get; }
-        string Name { get; set; }
-        string Type { get; set; }
+        string Name { get; }
+        string Type { get; }
     }
 
     public interface IConfig<T> : IConfig
     {
-        T Provider { get; set; }
+        T Provider { get; }
     }
 }
