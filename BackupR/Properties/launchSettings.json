@@ -3,6 +3,10 @@
     "BackupR": {
       "commandName": "Project",
       "commandLineArgs": "--config=./Examples/ftp-config.json"
+    },
+    "BackupR backup": {
+      "commandName": "Project",
+      "commandLineArgs": "backup --config=./Examples/ftp-config.json "
     }
   }
 }

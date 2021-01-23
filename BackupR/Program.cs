@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Tekook.BackupR.Verbs.Backup;
 using Tekook.BackupR.Verbs.Cleanup;
 
 namespace Tekook.BackupR
@@ -23,8 +24,9 @@ namespace Tekook.BackupR
 
         private static async Task Main(string[] args)
         {
-            Parser.Default.ParseArguments<CleanupOptions>(args)
-                .WithParsed(o => (new CleanupVerb(o)).Invoke())
+            Parser.Default.ParseArguments<CleanupOptions, BackupOptions>(args)
+                .WithParsed<CleanupOptions>(o => (new CleanupVerb(o)).Invoke())
+                .WithParsed<BackupOptions>(o => (new BackupVerb(o)).Invoke())
                 .WithNotParsed(HandleParseError);
         }
     }

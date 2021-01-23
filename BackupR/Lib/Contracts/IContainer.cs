@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace Tekook.BackupR.Lib.Contracts
 {
@@ -41,5 +43,13 @@ namespace Tekook.BackupR.Lib.Contracts
         /// Size in bytes.
         /// </summary>
         long Size { get; }
+
+        /// <summary>
+        /// Uploads a file to this container.
+        /// </summary>
+        /// <param name="file">File to upload.</param>
+        /// <param name="name">If other than null, this name will be used.</param>
+        /// <returns></returns>
+        Task Upload(FileInfo file, string name = null);
     }
 }

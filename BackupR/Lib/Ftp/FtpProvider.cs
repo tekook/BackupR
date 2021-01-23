@@ -9,6 +9,9 @@ namespace Tekook.BackupR.Lib.Ftp
 {
     public class FtpProvider : IProvider, IDisposable
     {
+        /// <inheritdoc/>
+        public string RootPath => this.Config.Path;
+
         /// <summary>
         /// FtpClient this provider uses.
         /// </summary>
@@ -56,21 +59,23 @@ namespace Tekook.BackupR.Lib.Ftp
         }
 
         /// <inheritdoc/>
+        public async Task<IContainer> GetContainer(string path, bool recursive = false)
+        {
+            await this.EnsureClientConnected();
+            return await this.GetContainer(path, recursive, null);
+        }
+
+        /// <inheritdoc/>
         public async Task<IContainer> GetRoot()
         {
-            this.Client = new FtpClient(this.Config.Host);
-            var creds = this.Config.Username != null && this.Config.Password != null ? new NetworkCredential(this.Config.Username, this.Config.Password) : null;
-            if (creds != null)
-            {
-                this.Client.Credentials = creds;
-            }
-            await this.Client.ConnectAsync();
-            return await GetContainer(this.Config.Path);
+            await this.EnsureClientConnected();
+            return await GetContainer(this.Config.Path, true);
         }
 
         /// <inheritdoc/>
         public async Task Upload(FileInfo file, IContainer target, string name = null)
         {
+            await this.EnsureClientConnected();
             if (target.Provider != this)
             {
                 throw new InvalidOperationException("Invalid container provided. Provider does not match!");
@@ -79,11 +84,32 @@ namespace Tekook.BackupR.Lib.Ftp
         }
 
         /// <summary>
+        /// Ensures that the <see cref="FtpClient"/> is connected.
+        /// </summary>
+        /// <returns></returns>
+        protected async Task EnsureClientConnected()
+        {
+            if (this.Client == null)
+            {
+                this.Client = new FtpClient(this.Config.Host);
+                var creds = this.Config.Username != null && this.Config.Password != null ? new NetworkCredential(this.Config.Username, this.Config.Password) : null;
+                if (creds != null)
+                {
+                    this.Client.Credentials = creds;
+                }
+            }
+            if (!this.Client.IsConnected)
+            {
+                await this.Client.ConnectAsync();
+            }
+        }
+
+        /// <summary>
         /// Reads the Container via ftp recursivly
         /// </summary>
         /// <param name="path">Path to read</param>
         /// <returns>Read container.</returns>
-        private async Task<FtpContainer> GetContainer(string path, FtpContainer rootParent = null)
+        private async Task<FtpContainer> GetContainer(string path, bool recursive = false, FtpContainer rootParent = null)
         {
             FtpContainer root = new FtpContainer(this, path);
             if (rootParent == null)
@@ -103,9 +129,9 @@ namespace Tekook.BackupR.Lib.Ftp
                         Size = await this.Client.GetFileSizeAsync(item.FullName),
                     });
                 }
-                else if (item.Type == FtpFileSystemObjectType.Directory)
+                else if (item.Type == FtpFileSystemObjectType.Directory && recursive)
                 {
-                    container = await this.GetContainer(item.FullName, rootParent);
+                    container = await this.GetContainer(item.FullName, recursive, rootParent);
                     root.Containers.Add(container);
                     rootParent.AllContainers.Add(container);
                 }

@@ -11,6 +11,7 @@
     "Folders": [
       {
         "Name": "Home-Backup",
+        "UploadPath": "home",
         "Path": "C:\\tmp\\home",
         "Compress": true,
         "Excludes": [
@@ -21,13 +22,16 @@
     "Commands": [
       {
         "Name": "Command-Backup",
-        "Command": "powershell C:\\tmp\\script.ps1",
-        "OutputFile": "C:\\tmp\\script_output.zip"
+        "UploadName": "etc_$date",
+        "UploadPath": "etc",
+        "Command": "powershell",
+        "Arguments": "C:\\tmp\\b\\script.ps1"
       }
     ],
     "MysqlBackups": [
       {
         "Name": "Mysql-Backup",
+        "UploadPath": "mysql",
         "MysqlDumpPath": "mysqldump"
       }
     ]

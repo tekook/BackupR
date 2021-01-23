@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
 
 namespace Tekook.BackupR.Lib
@@ -68,6 +70,12 @@ namespace Tekook.BackupR.Lib
         public override string ToString()
         {
             return $"{this.GetType().Name}:{this.Path} ({this.ReadableSize})";
+        }
+
+        /// <inheritdoc/>
+        public async Task Upload(FileInfo file, string name = null)
+        {
+            await this.Provider.Upload(file, this, name);
         }
     }
 }

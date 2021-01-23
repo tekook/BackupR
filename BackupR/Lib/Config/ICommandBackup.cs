@@ -2,8 +2,8 @@
 {
     public interface ICommandBackup : IBackup
     {
+        public string Arguments { get; }
         public string Command { get; }
-        public string OutputPath { get; }
         public string WorkingDirectory { get; }
     }
 }
