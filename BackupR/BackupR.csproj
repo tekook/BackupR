@@ -20,6 +20,7 @@
     <PackageReference Include="ByteSize" Version="2.0.0" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="FluentFTP" Version="33.0.3" />
+    <PackageReference Include="SharpCompress" Version="0.27.1" />
     <PackageReference Include="Tekook.VerbR" Version="0.0.3" />
     <PackageReference Include="Tekook.VerbR.Resolvers" Version="0.0.3" />
     <PackageReference Include="Tekook.VerbR.Validators" Version="0.0.3" />
@@ -34,5 +35,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 
 </Project>

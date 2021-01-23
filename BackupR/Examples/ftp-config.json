@@ -11,11 +11,12 @@
     "Folders": [
       {
         "Name": "Home-Backup",
+        "UploadName": "home_$date.tar.gz",
         "UploadPath": "home",
-        "Path": "C:\\tmp\\home",
+        "Path": "C:\\tmp\\b\\home",
         "Compress": true,
         "Excludes": [
-          "C:\\tmp\\asd"
+          "C:\\tmp\\b\\asd"
         ]
       }
     ],
@@ -44,7 +45,7 @@
     },
     {
       "Path": "etc2",
-      "MaxSize": "-1GB",
+      "MaxSize": "1GB",
       "MaxFiles": null
     }
   ]
