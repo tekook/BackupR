@@ -24,7 +24,7 @@ namespace Tekook.BackupR.Verbs.Cleanup
 
             foreach (IContainerConfig configContainer in this.Config.Containers)
             {
-                IContainer container = root.AllContainers.Where(x => x.Path == root.Path + configContainer.Path).FirstOrDefault();
+                IContainer container = await provider.GetContainer(root.Path + configContainer.Path);
                 if (container == null)
                 {
                     Console.WriteLine($"Container not found for {configContainer.Path}");

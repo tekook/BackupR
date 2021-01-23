@@ -62,7 +62,27 @@ namespace Tekook.BackupR.Lib.Ftp
         public async Task<IContainer> GetContainer(string path, bool recursive = false)
         {
             await this.EnsureClientConnected();
-            return await this.GetContainer(path, recursive, null);
+            FtpContainer root = new FtpContainer(this, path);
+            FtpContainer container;
+            foreach (FtpListItem item in await this.Client.GetListingAsync(path))
+            {
+                if (item.Type == FtpFileSystemObjectType.File)
+                {
+                    root.Items.Add(new FtpItem(root)
+                    {
+                        Date = await this.Client.GetModifiedTimeAsync(item.FullName),
+                        Name = item.Name,
+                        Path = item.FullName,
+                        Size = await this.Client.GetFileSizeAsync(item.FullName),
+                    });
+                }
+                else if (item.Type == FtpFileSystemObjectType.Directory && recursive)
+                {
+                    container = (FtpContainer)await this.GetContainer(item.FullName, recursive);
+                    root.Containers.Add(container);
+                }
+            }
+            return root;
         }
 
         /// <inheritdoc/>
@@ -102,41 +122,6 @@ namespace Tekook.BackupR.Lib.Ftp
             {
                 await this.Client.ConnectAsync();
             }
-        }
-
-        /// <summary>
-        /// Reads the Container via ftp recursivly
-        /// </summary>
-        /// <param name="path">Path to read</param>
-        /// <returns>Read container.</returns>
-        private async Task<FtpContainer> GetContainer(string path, bool recursive = false, FtpContainer rootParent = null)
-        {
-            FtpContainer root = new FtpContainer(this, path);
-            if (rootParent == null)
-            {
-                rootParent = root;
-            }
-            FtpContainer container;
-            foreach (FtpListItem item in await this.Client.GetListingAsync(path))
-            {
-                if (item.Type == FtpFileSystemObjectType.File)
-                {
-                    root.Items.Add(new FtpItem(root)
-                    {
-                        Date = await this.Client.GetModifiedTimeAsync(item.FullName),
-                        Name = item.Name,
-                        Path = item.FullName,
-                        Size = await this.Client.GetFileSizeAsync(item.FullName),
-                    });
-                }
-                else if (item.Type == FtpFileSystemObjectType.Directory && recursive)
-                {
-                    container = await this.GetContainer(item.FullName, recursive, rootParent);
-                    root.Containers.Add(container);
-                    rootParent.AllContainers.Add(container);
-                }
-            }
-            return root;
         }
     }
 }

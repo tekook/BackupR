@@ -9,14 +9,6 @@ namespace Tekook.BackupR.Lib
 {
     public abstract class Container<TProvider, TContainer, TItem> : IContainer where TItem : IItem where TContainer : IContainer where TProvider : IProvider
     {
-        /// <summary>
-        /// List of all containers underlying to this one.
-        /// </summary>
-        public List<TContainer> AllContainers { get; set; } = new List<TContainer>();
-
-        /// <inheritdoc/>
-        IEnumerable<IContainer> IContainer.AllContainers => (IEnumerable<IContainer>)this.AllContainers;
-
         /// <inheritdoc/>
         IEnumerable<IContainer> IContainer.Containers => (IEnumerable<IContainer>)this.Containers;
 
