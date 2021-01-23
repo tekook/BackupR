@@ -2,8 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Tekook.BackupR.Verbs.Backup;
-using Tekook.BackupR.Verbs.Cleanup;
+using Tekook.BackupR.Verbs;
 
 namespace Tekook.BackupR
 {

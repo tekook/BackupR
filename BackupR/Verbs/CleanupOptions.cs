@@ -2,7 +2,7 @@
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.VerbR.Contracts;
 
-namespace Tekook.BackupR.Verbs.Cleanup
+namespace Tekook.BackupR.Verbs
 {
     [Verb("cleanup", true)]
     internal class CleanupOptions : ICanValidateOnly, IOptions

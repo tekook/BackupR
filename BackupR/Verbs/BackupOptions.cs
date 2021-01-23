@@ -2,7 +2,7 @@
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.VerbR.Contracts;
 
-namespace Tekook.BackupR.Verbs.Backup
+namespace Tekook.BackupR.Verbs
 {
     [Verb("backup")]
     internal class BackupOptions : ICanValidateOnly, IOptions

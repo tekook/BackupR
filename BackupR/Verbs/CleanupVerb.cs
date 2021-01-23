@@ -8,7 +8,7 @@ using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.VerbR.Resolvers;
 
-namespace Tekook.BackupR.Verbs.Cleanup
+namespace Tekook.BackupR.Verbs
 {
     internal class CleanupVerb : VerbR.Verb<CleanupOptions, IConfig>
     {
