@@ -29,27 +29,25 @@ namespace Tekook.BackupR.Verbs.Backup
             return 0;
         }
 
-        private async Task HandleBackupFile(FileInfo file, IBackup backup)
+        private async Task HandleBackupFile(IBackupTask task, IBackup backup)
         {
+            await task.CreateBackup();
             var container = await this.Provider.GetContainer(Path.Combine(this.Provider.RootPath, backup.UploadPath));
             var name = backup.UploadName?.Replace("$date", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"), StringComparison.CurrentCultureIgnoreCase);
             if (name != null && string.IsNullOrEmpty(Path.GetExtension(name)))
             {
-                name += file.Extension;
+                name += task.BackupFile.Extension;
             }
-            await container.Upload(file, name);
+            await container.Upload(task.BackupFile, name);
+            task.RemoveBackup();
         }
 
         private async Task HandleCommands(IEnumerable<ICommandBackup> commands)
         {
             foreach (ICommandBackup command in commands)
             {
-                var backup = new CommandBackup(command);
-                FileInfo file = await backup.CreateBackup();
-                if (file?.Exists == true)
-                {
-                    await this.HandleBackupFile(file, command);
-                }
+                IBackupTask task = new CommandBackup(command);
+                await this.HandleBackupFile(task, command);
             }
         }
 
@@ -57,12 +55,8 @@ namespace Tekook.BackupR.Verbs.Backup
         {
             foreach (IFolderBackup folder in folders)
             {
-                var backup = new FolderBackup(folder);
-                FileInfo file = await backup.CreateBackup();
-                if (file?.Exists == true)
-                {
-                    await this.HandleBackupFile(file, folder);
-                }
+                var task = new FolderBackup(folder);
+                await this.HandleBackupFile(task, folder);
             }
         }
 

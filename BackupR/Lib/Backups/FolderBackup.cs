@@ -19,11 +19,17 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override async Task<FileInfo> CreateBackup()
         {
-            using var archive = TarArchive.Create();
-            archive.AddAllFromDirectory(this.Settings.Path);
-            string tempFile = Path.GetTempFileName();
-            archive.SaveTo(tempFile, CompressionType.GZip);
-            return new FileInfo(tempFile);
+            await Task.Run(() =>
+            {
+                string tempFile = Path.GetTempFileName();
+                using (var archive = TarArchive.Create())
+                {
+                    archive.AddAllFromDirectory(this.Settings.Path);
+                    archive.SaveTo(tempFile, CompressionType.GZip);
+                }
+                this.BackupFile = new FileInfo(tempFile);
+            });
+            return this.BackupFile;
         }
     }
 }

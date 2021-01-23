@@ -17,6 +17,7 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override async Task<FileInfo> CreateBackup()
         {
+            this.RemoveBackup();
             var process = new Process
             {
                 StartInfo =
@@ -34,9 +35,9 @@ namespace Tekook.BackupR.Lib.Backups
             if (process.ExitCode == 0)
             {
                 string o = await process.StandardOutput.ReadLineAsync();
-                return new FileInfo(o);
+                this.BackupFile = new FileInfo(o);
             }
-            return null;
+            return this.BackupFile;
         }
     }
 }

@@ -101,7 +101,10 @@ namespace Tekook.BackupR.Lib.Ftp
             {
                 throw new InvalidOperationException("Invalid container provided. Provider does not match!");
             }
-            await this.Client.UploadAsync(file.OpenRead(), Path.Combine(target.Path, name ?? file.Name));
+            using (FileStream stream = file.OpenRead())
+            {
+                await this.Client.UploadAsync(stream, Path.Combine(target.Path, name ?? file.Name));
+            }
         }
 
         /// <summary>
