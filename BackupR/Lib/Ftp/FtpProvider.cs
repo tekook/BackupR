@@ -115,7 +115,10 @@ namespace Tekook.BackupR.Lib.Ftp
         {
             if (this.Client == null)
             {
-                this.Client = new FtpClient(this.Config.Host);
+                this.Client = new FtpClient(this.Config.Host)
+                {
+                    Port = this.Config.Port
+                };
                 var creds = this.Config.Username != null && this.Config.Password != null ? new NetworkCredential(this.Config.Username, this.Config.Password) : null;
                 if (creds != null)
                 {
