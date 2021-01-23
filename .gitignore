@@ -255,6 +255,7 @@ _UpgradeReport_Files/
 Backup*/
 !BackupR/
 !BackupR/Lib/Backups
+!BackupR/Verbs/Backup
 UpgradeLog*.XML
 UpgradeLog*.htm
 ServiceFabricBackup/
