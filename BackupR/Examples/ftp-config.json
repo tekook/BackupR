@@ -16,7 +16,7 @@
         "Path": "C:\\tmp\\b\\home",
         "Compress": true,
         "Excludes": [
-          "C:\\tmp\\b\\asd"
+          "asd\\bl*"
         ]
       }
     ],
