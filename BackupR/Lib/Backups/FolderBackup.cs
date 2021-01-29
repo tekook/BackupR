@@ -56,7 +56,6 @@ namespace Tekook.BackupR.Lib.Backups
                             }
                         }
                     }
-                    //archive.AddAllFromDirectory(this.Settings.Path);
                     archive.SaveTo(tempFile, CompressionType.GZip);
                 }
                 this.BackupFile = new FileInfo(tempFile);
