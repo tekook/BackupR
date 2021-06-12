@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Backups;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
+using Tekook.BackupR.Lib.Exceptions;
 using Tekook.VerbR.Resolvers;
 
 namespace Tekook.BackupR.Verbs
@@ -25,7 +26,7 @@ namespace Tekook.BackupR.Verbs
             var backup = this.Config.Backup;
             await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
             await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
-            // await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
+            await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
             return 0;
         }
 
@@ -47,8 +48,15 @@ namespace Tekook.BackupR.Verbs
             {
                 name += task.BackupFile.Extension;
             }
-            await container.Upload(task.BackupFile, name);
-            task.RemoveBackup();
+            if (task.BackupFile != null)
+            {
+                await container.Upload(task.BackupFile, name);
+                task.RemoveBackup();
+            }
+            else
+            {
+                throw new BackupException("no backupfile created");
+            }
         }
     }
 }
