@@ -23,13 +23,22 @@ namespace Tekook.BackupR.Verbs
         {
             this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
             var backup = this.Config.Backup;
-            await this.HandleFolders(backup.Folders);
-            await this.HandleCommands(backup.Commands);
-            await this.HandleMysqlBackups(backup.MysqlBackups);
+            await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
+            await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
+            // await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
             return 0;
         }
 
-        private async Task HandleBackupFile(IBackupTask task, IBackup backup)
+        private async Task Handle<T, T2>(IEnumerable<T2> settings) where T : Backup where T2 : IBackup
+        {
+            foreach (T2 setting in settings)
+            {
+                T task = (T)Activator.CreateInstance(typeof(T), setting);
+                await this.HandleTask(task, setting);
+            }
+        }
+
+        private async Task HandleTask(IBackupTask task, IBackup backup)
         {
             await task.CreateBackup();
             var container = await this.Provider.GetContainer(Path.Combine(this.Provider.RootPath, backup.UploadPath));
@@ -40,28 +49,6 @@ namespace Tekook.BackupR.Verbs
             }
             await container.Upload(task.BackupFile, name);
             task.RemoveBackup();
-        }
-
-        private async Task HandleCommands(IEnumerable<ICommandBackup> commands)
-        {
-            foreach (ICommandBackup command in commands)
-            {
-                IBackupTask task = new CommandBackup(command);
-                await this.HandleBackupFile(task, command);
-            }
-        }
-
-        private async Task HandleFolders(IEnumerable<IFolderBackup> folders)
-        {
-            foreach (IFolderBackup folder in folders)
-            {
-                var task = new FolderBackup(folder);
-                await this.HandleBackupFile(task, folder);
-            }
-        }
-
-        private async Task HandleMysqlBackups(IEnumerable<IMysqlBackup> mysqlBackups)
-        {
         }
     }
 }
