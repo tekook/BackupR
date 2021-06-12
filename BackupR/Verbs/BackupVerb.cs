@@ -43,7 +43,7 @@ namespace Tekook.BackupR.Verbs
         {
             await task.CreateBackup();
             var container = await this.Provider.GetContainer(Path.Combine(this.Provider.RootPath, backup.UploadPath));
-            var name = backup.UploadName?.Replace("$date", DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss"), StringComparison.CurrentCultureIgnoreCase);
+            var name = task.GetUploadName(backup);
             if (name != null && string.IsNullOrEmpty(Path.GetExtension(name)))
             {
                 name += task.BackupFile.Extension;
