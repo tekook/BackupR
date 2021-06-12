@@ -33,12 +33,16 @@
       {
         "Name": "Mysql-Backup",
         "UploadPath": "mysql",
-        "UploadName": "mysql_$date.sql",
+        "UploadName": "mysql_$date.tar.gz",
         "MysqlDumpPath": "C:\\tmp\\b\\mysql\\mysqldump.exe",
         "Host": "mysql.dev.local",
         "Username": "root",
         "Password": "Docker_1337",
-        "Databases": null,
+        "Databases": [
+          "alertify",
+          "camboard",
+          "wcontacts"
+        ],
         "AddLocks": true,
         "Events": true,
         "FlushPrivileges": false,

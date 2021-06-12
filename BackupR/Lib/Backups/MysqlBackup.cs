@@ -1,9 +1,13 @@
-﻿using System;
+﻿using SharpCompress.Archives;
+using SharpCompress.Archives.Tar;
+using SharpCompress.Common;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Config;
+using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Backups
 {
@@ -18,33 +22,36 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override async Task<FileInfo> CreateBackup()
         {
+            string tmpdir = this.GetTempDir();
             string tmpname = Path.GetTempFileName();
-            string args = GetArguments(tmpname);
-            var process = new Process
+            List<string> dbs = new List<string>(this.Settings.Databases ?? Array.Empty<string>());
+            if (dbs.Count == 0)
             {
-                StartInfo =
+                dbs.Add(null);
+            }
+            List<FileInfo> files = new List<FileInfo>();
+
+            string name, dump;
+            foreach (string db in dbs)
+            {
+                name = Path.Combine(tmpdir, (db ?? "__all") + ".sql");
+                dump = await this.MakeDump(name, db);
+                files.Add(new FileInfo(dump));
+            }
+            using (var archive = TarArchive.Create())
+            {
+                using (archive.PauseEntryRebuilding())
                 {
-                    FileName = this.Settings.MysqlDumpPath,
-                    Arguments = args,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true
+                    foreach (var file in files)
+                    {
+                        archive.AddEntry(file.Name, file.OpenRead(), true, file.Length, file.LastWriteTime);
+                    }
                 }
-            };
-            process.Start();
-            await process.WaitForExitAsync();
-            if (process.ExitCode == 0)
-            {
-                this.BackupFile = new FileInfo(tmpname);
-                return this.BackupFile;
+                archive.SaveTo(tmpname, CompressionType.GZip);
             }
-            else
-            {
-                string output = process.StandardOutput.ReadToEnd();
-                string error = process.StandardError.ReadToEnd();
-            }
-            return null;
+            Directory.Delete(tmpdir, true);
+            this.BackupFile = new FileInfo(tmpname);
+            return this.BackupFile;
         }
 
         private string GetArguments(string file, string db = null)
@@ -100,6 +107,41 @@ namespace Tekook.BackupR.Lib.Backups
             }
             args.Add($"--result-file=\"{file}\"");
             return string.Join(' ', args);
+        }
+
+        private string GetTempDir()
+        {
+            string file = Path.GetTempFileName();
+            File.Delete(file);
+            Directory.CreateDirectory(file);
+            return file;
+        }
+
+        private async Task<string> MakeDump(string file, string db = null)
+        {
+            string args = GetArguments(file, db);
+            var process = new Process
+            {
+                StartInfo =
+                {
+                    FileName = this.Settings.MysqlDumpPath,
+                    Arguments = args,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true
+                }
+            };
+            process.Start();
+            await process.WaitForExitAsync();
+            if (process.ExitCode == 0)
+            {
+                return file;
+            }
+            else
+            {
+                throw new BackupException();
+            }
         }
     }
 }
