@@ -33,7 +33,13 @@
       {
         "Name": "Mysql-Backup",
         "UploadPath": "mysql",
-        "MysqlDumpPath": "mysqldump"
+        "MysqlDumpPath": "mysqldump",
+        "Databases": null,
+        "AddLocks": true,
+        "Events": true,
+        "FlushPrivilegies": false,
+        "Routines": true,
+        "Triggers": true
       }
     ]
   },

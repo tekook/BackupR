@@ -1,13 +1,15 @@
-﻿namespace Tekook.BackupR.Lib.Config
+﻿using System.Collections.Generic;
+
+namespace Tekook.BackupR.Lib.Config
 {
     public interface IMysqlBackup : IBackup
     {
-        public string MysqlDumpPath { get; }
         public bool AddLocks { get; }
-        public bool FlushPrivilegies { get; }
-        public bool Routines { get; }
+        public IEnumerable<string> Databases { get; set; }
         public bool Events { get; }
+        public bool FlushPrivilegies { get; }
+        public string MysqlDumpPath { get; }
+        public bool Routines { get; }
         public bool Triggers { get; }
-        public string DbName { get; }
     }
 }
