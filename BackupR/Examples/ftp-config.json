@@ -43,6 +43,11 @@
           "camboard",
           "wcontacts"
         ],
+        "FetchDatabases": true,
+        "Excludes": [
+          "information_schema",
+          "performance_schema"
+        ],
         "AddLocks": true,
         "Events": true,
         "FlushPrivileges": false,

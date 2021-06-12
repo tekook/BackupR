@@ -8,6 +8,8 @@ namespace Tekook.BackupR.Lib.Config
         public bool ColumnStatistics { get; }
         public IEnumerable<string> Databases { get; }
         public bool Events { get; }
+        public IEnumerable<string> Excludes { get; }
+        public bool FetchDatabases { get; }
         public bool FlushPrivileges { get; }
         public string Host { get; }
         public string MysqlDumpPath { get; }

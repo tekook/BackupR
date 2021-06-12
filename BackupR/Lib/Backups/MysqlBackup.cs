@@ -1,10 +1,12 @@
-﻿using SharpCompress.Archives;
+﻿using MySqlConnector;
+using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Exceptions;
@@ -24,7 +26,7 @@ namespace Tekook.BackupR.Lib.Backups
         {
             string tmpdir = this.GetTempDir();
             string tmpname = Path.GetTempFileName();
-            List<string> dbs = new List<string>(this.Settings.Databases ?? Array.Empty<string>());
+            List<string> dbs = this.Settings.FetchDatabases ? await this.FetchDatabases() : new List<string>(this.Settings.Databases ?? Array.Empty<string>());
             if (dbs.Count == 0)
             {
                 dbs.Add(null);
@@ -34,7 +36,7 @@ namespace Tekook.BackupR.Lib.Backups
             string name, dump;
             foreach (string db in dbs)
             {
-                name = Path.Combine(tmpdir, (db ?? "__all") + ".sql");
+                name = Path.Combine(tmpdir, (db ?? "-all-databases-") + ".sql");
                 dump = await this.MakeDump(name, db);
                 files.Add(new FileInfo(dump));
             }
@@ -52,6 +54,31 @@ namespace Tekook.BackupR.Lib.Backups
             Directory.Delete(tmpdir, true);
             this.BackupFile = new FileInfo(tmpname);
             return this.BackupFile;
+        }
+
+        private async Task<List<string>> FetchDatabases()
+        {
+            var x = new MySqlConnectionStringBuilder();
+            x.UserID = this.Settings.Username;
+            x.Password = this.Settings.Password;
+            x.Server = this.Settings.Host;
+            List<string> dbs = new List<string>();
+            using (var connection = new MySqlConnection(x.ToString()))
+            {
+                await connection.OpenAsync();
+                using var command = new MySqlCommand("show databases;", connection);
+                using var reader = await command.ExecuteReaderAsync();
+                string db;
+                while (await reader.ReadAsync())
+                {
+                    db = reader.GetString(0);
+                    if (!this.Settings.Excludes.Contains(db))
+                    {
+                        dbs.Add(db);
+                    }
+                }
+            }
+            return dbs;
         }
 
         private string GetArguments(string file, string db = null)
@@ -140,7 +167,8 @@ namespace Tekook.BackupR.Lib.Backups
             }
             else
             {
-                throw new BackupException();
+                string error = process.StandardError.ReadToEnd();
+                throw new BackupException(error);
             }
         }
     }
