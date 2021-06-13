@@ -1,7 +1,10 @@
-﻿using Config.Net;
+﻿using ByteSizeLib;
+using Config.Net;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Backups;
 using Tekook.BackupR.Lib.Config;
@@ -13,6 +16,7 @@ namespace Tekook.BackupR.Verbs
 {
     internal class BackupVerb : VerbR.Verb<BackupOptions, IConfig>
     {
+        protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IProvider Provider { get; set; }
 
         public BackupVerb(BackupOptions options) : base(options)
@@ -22,7 +26,9 @@ namespace Tekook.BackupR.Verbs
 
         public override async Task<int> InvokeAsync()
         {
+            Logger.Info("Starting backup");
             this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
+            Logger.Debug("Provider: {provider}", this.Provider.GetType().Name);
             var backup = this.Config.Backup;
             await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
             await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
@@ -32,30 +38,46 @@ namespace Tekook.BackupR.Verbs
 
         private async Task Handle<T, T2>(IEnumerable<T2> settings) where T : Backup where T2 : IBackup
         {
+            Logger.Info("Handling {type:l}s: {count}", typeof(T).Name, settings.Count());
             foreach (T2 setting in settings)
             {
                 T task = (T)Activator.CreateInstance(typeof(T), setting);
-                await this.HandleTask(task, setting);
+                try
+                {
+                    await this.HandleTask(task, setting);
+                }
+                catch (BackupException e)
+                {
+                    Logger.Error(e.Message, e);
+                }
+                finally
+                {
+                    task?.RemoveBackup();
+                }
             }
         }
 
         private async Task HandleTask(IBackupTask task, IBackup backup)
         {
+            Logger.Info("Creating backup for {task:l}", task.ToString());
             await task.CreateBackup();
-            var container = await this.Provider.GetContainer(Path.Combine(this.Provider.RootPath, backup.UploadPath));
-            var name = task.GetUploadName(backup);
-            if (name != null && string.IsNullOrEmpty(Path.GetExtension(name)))
-            {
-                name += task.BackupFile.Extension;
-            }
             if (task.BackupFile != null)
             {
+                Logger.Info("Backup created with size: {size}", ByteSize.FromBytes(task.BackupFile.Length));
+                var name = task.GetUploadName(backup);
+                if (name != null && string.IsNullOrEmpty(Path.GetExtension(name)))
+                {
+                    name += task.BackupFile.Extension;
+                }
+                string path = Path.Combine(this.Provider.RootPath, backup.UploadPath);
+                Logger.Info("Uploading backup as {filename} to {path}", name, path);
+                var container = await this.Provider.GetContainer(path);
                 await container.Upload(task.BackupFile, name);
-                task.RemoveBackup();
+                Logger.Info("Upload finished");
             }
             else
             {
-                throw new BackupException("no backupfile created");
+                throw new BackupException(task, "Task did not create any backup file.");
             }
         }
     }

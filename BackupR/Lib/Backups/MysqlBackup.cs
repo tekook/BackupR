@@ -1,4 +1,5 @@
 ﻿using MySqlConnector;
+using NLog;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
@@ -15,7 +16,10 @@ namespace Tekook.BackupR.Lib.Backups
 {
     internal class MysqlBackup : Backup
     {
+        protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IMysqlBackup Settings { get; set; }
+        protected string TempDirectory { get; set; }
+        protected string TempFile { get; set; }
 
         public MysqlBackup(IMysqlBackup settings)
         {
@@ -24,8 +28,8 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override async Task<FileInfo> CreateBackup()
         {
-            string tmpdir = this.GetTempDir();
-            string tmpname = Path.GetTempFileName();
+            this.TempDirectory = this.GetTempDir();
+            this.TempFile = Path.GetTempFileName();
             List<string> dbs = this.Settings.FetchDatabases ? await this.FetchDatabases() : new List<string>(this.Settings.Databases ?? Array.Empty<string>());
             if (dbs.Count == 0)
             {
@@ -36,7 +40,7 @@ namespace Tekook.BackupR.Lib.Backups
             string name, dump;
             foreach (string db in dbs)
             {
-                name = Path.Combine(tmpdir, (db ?? "-all-databases-") + ".sql");
+                name = Path.Combine(this.TempDirectory, (db ?? "-all-databases-") + ".sql");
                 dump = await this.MakeDump(name, db);
                 files.Add(new FileInfo(dump));
             }
@@ -49,15 +53,50 @@ namespace Tekook.BackupR.Lib.Backups
                         archive.AddEntry(file.Name, file.OpenRead(), true, file.Length, file.LastWriteTime);
                     }
                 }
-                archive.SaveTo(tmpname, CompressionType.GZip);
+                archive.SaveTo(TempFile, CompressionType.GZip);
             }
-            Directory.Delete(tmpdir, true);
-            this.BackupFile = new FileInfo(tmpname);
+            Directory.Delete(this.TempDirectory, true);
+            this.BackupFile = new FileInfo(TempFile);
             return this.BackupFile;
+        }
+
+        public override void RemoveBackup()
+        {
+            base.RemoveBackup();
+            if (!string.IsNullOrEmpty(this.TempFile) && File.Exists(this.TempFile))
+            {
+                File.Delete(this.TempFile);
+            }
+            if (!string.IsNullOrEmpty(this.TempDirectory) && Directory.Exists(this.TempDirectory))
+            {
+                Directory.Delete(this.TempDirectory, true);
+            }
+        }
+
+        public override string ToString()
+        {
+            List<string> config = new List<string>();
+            if (this.Settings.FetchDatabases)
+            {
+                config.Add("fetch-databases");
+            }
+            if (this.Settings.Databases.Count() > 0 && !this.Settings.FetchDatabases)
+            {
+                config.Add($"databases: [{string.Join(", ", this.Settings.Databases)}]");
+            }
+            if (this.Settings.Excludes.Count() > 0)
+            {
+                config.Add($"excludes: [{string.Join(", ", this.Settings.Excludes)}]");
+            }
+            return "{" +
+                $"{this.GetType().Name}: " +
+                string.Join(", ", config) +
+                "}";
         }
 
         private async Task<List<string>> FetchDatabases()
         {
+            Logger.Trace("fetching databases");
             var x = new MySqlConnectionStringBuilder();
             x.UserID = this.Settings.Username;
             x.Password = this.Settings.Password;
@@ -78,6 +117,7 @@ namespace Tekook.BackupR.Lib.Backups
                     }
                 }
             }
+            Logger.Trace("found [{databases}]", string.Join(", ", dbs));
             return dbs;
         }
 
@@ -168,7 +208,7 @@ namespace Tekook.BackupR.Lib.Backups
             else
             {
                 string error = process.StandardError.ReadToEnd();
-                throw new BackupException(error);
+                throw new BackupException(this, error);
             }
         }
     }

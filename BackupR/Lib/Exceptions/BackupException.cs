@@ -1,24 +1,25 @@
 ﻿using System;
-using System.Runtime.Serialization;
+using Tekook.BackupR.Lib.Contracts;
 
 namespace Tekook.BackupR.Lib.Exceptions
 {
     internal class BackupException : Exception
     {
-        public BackupException()
+        public IBackupTask BackupTask { get; }
+
+        public BackupException(IBackupTask backupTask)
         {
+            this.BackupTask = backupTask ?? throw new ArgumentNullException(nameof(backupTask));
         }
 
-        public BackupException(string message) : base(message)
+        public BackupException(IBackupTask backupTask, string message) : base(message)
         {
+            this.BackupTask = backupTask ?? throw new ArgumentNullException(nameof(backupTask));
         }
 
-        public BackupException(string message, Exception innerException) : base(message, innerException)
+        public BackupException(IBackupTask backupTask, string message, Exception innerException) : base(message, innerException)
         {
-        }
-
-        protected BackupException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
+            this.BackupTask = backupTask ?? throw new ArgumentNullException(nameof(backupTask));
         }
     }
 }
