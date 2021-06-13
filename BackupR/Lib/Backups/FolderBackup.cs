@@ -1,4 +1,6 @@
-﻿using SharpCompress.Archives;
+﻿using ByteSizeLib;
+using NLog;
+using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
 using System;
@@ -14,6 +16,7 @@ namespace Tekook.BackupR.Lib.Backups
     internal class FolderBackup : Backup
     {
         protected IEnumerable<Regex> Excludes { get; set; }
+        protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IFolderBackup Settings { get; set; }
 
         public FolderBackup(IFolderBackup settings)
@@ -37,6 +40,7 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override async Task<FileInfo> CreateBackup()
         {
+            Logger.Info("Creating archive of {path}", this.Settings.Path);
             await Task.Run(() =>
             {
                 string tempFile = Path.GetTempFileName();
@@ -51,16 +55,25 @@ namespace Tekook.BackupR.Lib.Backups
                             if (!this.Excludes.Any(x => x.IsMatch(pt)))
                             {
                                 var fileInfo = new FileInfo(path);
+                                Logger.Trace("Adding file: {file}", p);
                                 archive.AddEntry(p, fileInfo.OpenRead(), true, fileInfo.Length,
                                                 fileInfo.LastWriteTime);
                             }
                         }
                     }
+                    Logger.Trace("Saving to archive.");
                     archive.SaveTo(tempFile, CompressionType.GZip);
+                    Logger.Trace("Done.");
                 }
                 this.BackupFile = new FileInfo(tempFile);
+                Logger.Info("Archive created.", ByteSize.FromBytes(this.BackupFile.Length));
             });
             return this.BackupFile;
+        }
+
+        public override string ToString()
+        {
+            return $"{{{this.GetType().Name}: {this.Settings.Path}}}";
         }
     }
 }

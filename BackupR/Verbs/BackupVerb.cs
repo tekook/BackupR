@@ -26,19 +26,20 @@ namespace Tekook.BackupR.Verbs
 
         public override async Task<int> InvokeAsync()
         {
-            Logger.Info("Starting backup");
+            Logger.Info("------- Starting backup -------");
             this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
             Logger.Debug("Provider: {provider}", this.Provider.GetType().Name);
             var backup = this.Config.Backup;
             await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
             await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
             await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
+            Logger.Info("------- Backup finished -------");
             return 0;
         }
 
         private async Task Handle<T, T2>(IEnumerable<T2> settings) where T : Backup where T2 : IBackup
         {
-            Logger.Info("Handling {type:l}s: {count}", typeof(T).Name, settings.Count());
+            Logger.Info("------- Handling {type:l}s: {count} -------", typeof(T).Name, settings.Count());
             foreach (T2 setting in settings)
             {
                 T task = (T)Activator.CreateInstance(typeof(T), setting);
@@ -54,6 +55,7 @@ namespace Tekook.BackupR.Verbs
                 {
                     task?.RemoveBackup();
                     task?.CleanupTask();
+                    Logger.Info("------- Task done -------");
                 }
             }
         }

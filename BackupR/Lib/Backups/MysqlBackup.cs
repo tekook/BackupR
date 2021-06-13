@@ -53,6 +53,7 @@ namespace Tekook.BackupR.Lib.Backups
                 dump = await this.MakeDump(name, db);
                 files.Add(new FileInfo(dump));
             }
+            Logger.Debug("All databases dumped. Starting to create archive.");
             await Task.Run(() =>
             {
                 using var archive = TarArchive.Create();
@@ -60,10 +61,13 @@ namespace Tekook.BackupR.Lib.Backups
                 {
                     foreach (var file in files)
                     {
+                        Logger.Trace("Adding {file}", file.Name);
                         archive.AddEntry(file.Name, file.OpenRead(), true, file.Length, file.LastWriteTime);
                     }
                 }
+                Logger.Trace("Saving archive.");
                 archive.SaveTo(TempFile, CompressionType.GZip);
+                Logger.Trace("Done.");
             });
             Directory.Delete(this.TempDirectory, true);
             this.BackupFile = new FileInfo(TempFile);
@@ -86,7 +90,7 @@ namespace Tekook.BackupR.Lib.Backups
                 config.Add($"excludes: [{string.Join(", ", this.Settings.Excludes)}]");
             }
             return "{" +
-                $"{this.GetType().Name}: " +
+                $"{this.GetType().Name}: {this.Settings.Host} " +
                 string.Join(", ", config) +
                 "}";
         }
