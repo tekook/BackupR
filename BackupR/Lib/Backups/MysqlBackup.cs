@@ -19,11 +19,19 @@ namespace Tekook.BackupR.Lib.Backups
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IMysqlBackup Settings { get; set; }
         protected string TempDirectory { get; set; }
-        protected string TempFile { get; set; }
 
         public MysqlBackup(IMysqlBackup settings)
         {
             this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+        }
+
+        public override void CleanupTask()
+        {
+            base.CleanupTask();
+            if (!string.IsNullOrEmpty(this.TempDirectory) && Directory.Exists(this.TempDirectory))
+            {
+                Directory.Delete(this.TempDirectory, true);
+            }
         }
 
         public override async Task<FileInfo> CreateBackup()
@@ -58,19 +66,6 @@ namespace Tekook.BackupR.Lib.Backups
             Directory.Delete(this.TempDirectory, true);
             this.BackupFile = new FileInfo(TempFile);
             return this.BackupFile;
-        }
-
-        public override void RemoveBackup()
-        {
-            base.RemoveBackup();
-            if (!string.IsNullOrEmpty(this.TempFile) && File.Exists(this.TempFile))
-            {
-                File.Delete(this.TempFile);
-            }
-            if (!string.IsNullOrEmpty(this.TempDirectory) && Directory.Exists(this.TempDirectory))
-            {
-                Directory.Delete(this.TempDirectory, true);
-            }
         }
 
         public override string ToString()

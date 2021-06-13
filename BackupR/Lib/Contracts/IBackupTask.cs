@@ -13,6 +13,11 @@ namespace Tekook.BackupR.Lib.Contracts
         FileInfo BackupFile { get; }
 
         /// <summary>
+        /// Cleans all temporary files of the backup task.
+        /// </summary>
+        void CleanupTask();
+
+        /// <summary>
         /// Creates the backup.
         /// </summary>
         /// <returns>Path of the created backup file.</returns>

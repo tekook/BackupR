@@ -11,6 +11,19 @@ namespace Tekook.BackupR.Lib.Backups
         /// <inheritdoc/>
         public FileInfo BackupFile { get; protected set; }
 
+        /// <summary>
+        /// Temporary file to write the backup to.
+        /// </summary>
+        protected string TempFile { get; set; }
+
+        public virtual void CleanupTask()
+        {
+            if (!string.IsNullOrEmpty(this.TempFile) && File.Exists(this.TempFile))
+            {
+                File.Delete(this.TempFile);
+            }
+        }
+
         /// <inheritdoc/>
         public abstract Task<FileInfo> CreateBackup();
 

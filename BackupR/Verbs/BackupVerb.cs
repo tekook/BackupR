@@ -53,6 +53,7 @@ namespace Tekook.BackupR.Verbs
                 finally
                 {
                     task?.RemoveBackup();
+                    task?.CleanupTask();
                 }
             }
         }
