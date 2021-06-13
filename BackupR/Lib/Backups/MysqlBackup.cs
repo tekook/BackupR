@@ -36,14 +36,15 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override async Task<FileInfo> CreateBackup()
         {
-            this.TempDirectory = this.GetTempDir();
+            this.CleanupTask();
+            this.TempDirectory = GetTempDir();
             this.TempFile = Path.GetTempFileName();
             List<string> dbs = this.Settings.FetchDatabases ? await this.FetchDatabases() : new List<string>(this.Settings.Databases ?? Array.Empty<string>());
             if (dbs.Count == 0)
             {
                 dbs.Add(null);
             }
-            List<FileInfo> files = new List<FileInfo>();
+            List<FileInfo> files = new();
 
             string name, dump;
             foreach (string db in dbs)
@@ -52,8 +53,9 @@ namespace Tekook.BackupR.Lib.Backups
                 dump = await this.MakeDump(name, db);
                 files.Add(new FileInfo(dump));
             }
-            using (var archive = TarArchive.Create())
+            await Task.Run(() =>
             {
+                using var archive = TarArchive.Create();
                 using (archive.PauseEntryRebuilding())
                 {
                     foreach (var file in files)
@@ -62,7 +64,7 @@ namespace Tekook.BackupR.Lib.Backups
                     }
                 }
                 archive.SaveTo(TempFile, CompressionType.GZip);
-            }
+            });
             Directory.Delete(this.TempDirectory, true);
             this.BackupFile = new FileInfo(TempFile);
             return this.BackupFile;
@@ -70,7 +72,7 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override string ToString()
         {
-            List<string> config = new List<string>();
+            List<string> config = new();
             if (this.Settings.FetchDatabases)
             {
                 config.Add("fetch-databases");
@@ -89,6 +91,14 @@ namespace Tekook.BackupR.Lib.Backups
                 "}";
         }
 
+        private static string GetTempDir()
+        {
+            string file = Path.GetTempFileName();
+            File.Delete(file);
+            Directory.CreateDirectory(file);
+            return file;
+        }
+
         private async Task<List<string>> FetchDatabases()
         {
             Logger.Trace("fetching databases");
@@ -96,7 +106,7 @@ namespace Tekook.BackupR.Lib.Backups
             x.UserID = this.Settings.Username;
             x.Password = this.Settings.Password;
             x.Server = this.Settings.Host;
-            List<string> dbs = new List<string>();
+            List<string> dbs = new();
             using (var connection = new MySqlConnection(x.ToString()))
             {
                 await connection.OpenAsync();
@@ -118,7 +128,7 @@ namespace Tekook.BackupR.Lib.Backups
 
         private string GetArguments(string file, string db = null)
         {
-            List<string> args = new List<string>();
+            List<string> args = new();
             if (this.Settings.AddLocks)
             {
                 args.Add("--add-locks");
@@ -171,14 +181,6 @@ namespace Tekook.BackupR.Lib.Backups
             return string.Join(' ', args);
         }
 
-        private string GetTempDir()
-        {
-            string file = Path.GetTempFileName();
-            File.Delete(file);
-            Directory.CreateDirectory(file);
-            return file;
-        }
-
         private async Task<string> MakeDump(string file, string db = null)
         {
             string args = GetArguments(file, db);
@@ -202,7 +204,7 @@ namespace Tekook.BackupR.Lib.Backups
             }
             else
             {
-                string error = process.StandardError.ReadToEnd();
+                string error = await process.StandardError.ReadToEndAsync();
                 throw new BackupException(this, error);
             }
         }
