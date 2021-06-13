@@ -56,10 +56,14 @@ namespace Tekook.BackupR.Verbs
                 toDelete.Add(files[0]);
                 files.RemoveAt(0);
             }
-            foreach (var item in toDelete)
+            if (toDelete.Count > 0)
             {
-                Logger.Info("Deleting {path} -> {size}", item.Path, ByteSize.FromBytes(item.Size));
-                await item.Delete();
+                foreach (var item in toDelete)
+                {
+                    Logger.Info("Deleting {path} -> {size}", item.Path, ByteSize.FromBytes(item.Size));
+                    await item.Delete();
+                }
+                Logger.Info("Remaining files: {count}", files.Count);
             }
         }
 
@@ -82,6 +86,8 @@ namespace Tekook.BackupR.Verbs
                     Logger.Info("Deleting {path} -> {size}", item.Path, ByteSize.FromBytes(item.Size));
                     await item.Delete();
                 }
+                containerSize = ByteSize.FromBytes(files.Sum(x => x.Size));
+                Logger.Info("Remaining size: {size}", containerSize);
             }
         }
     }

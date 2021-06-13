@@ -90,7 +90,7 @@ namespace Tekook.BackupR.Lib.Backups
                 config.Add($"excludes: [{string.Join(", ", this.Settings.Excludes)}]");
             }
             return "{" +
-                $"{this.GetType().Name}: {this.Settings.Host} " +
+                $"{this.GetType().Name}|{this.Settings.Name}: {this.Settings.Host} " +
                 string.Join(", ", config) +
                 "}";
         }

@@ -42,10 +42,12 @@ namespace Tekook.BackupR.Verbs
             Logger.Info("------- Handling {type:l}s: {count} -------", typeof(T).Name, settings.Count());
             foreach (T2 setting in settings)
             {
+                Logger.Info("Starting: {backup_name}", setting.Name);
                 T task = (T)Activator.CreateInstance(typeof(T), setting);
                 try
                 {
                     await this.HandleTask(task, setting);
+                    Logger.Info("Finished: {backup_name}", setting.Name);
                 }
                 catch (BackupException e)
                 {
@@ -62,7 +64,7 @@ namespace Tekook.BackupR.Verbs
 
         private async Task HandleTask(IBackupTask task, IBackup backup)
         {
-            Logger.Info("Creating backup for {task:l}", task.ToString());
+            Logger.Debug("Backup configuration: {task:l}", task.ToString());
             await task.CreateBackup();
             if (task.BackupFile != null)
             {

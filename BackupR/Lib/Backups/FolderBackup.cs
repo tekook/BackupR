@@ -1,5 +1,4 @@
-﻿using ByteSizeLib;
-using NLog;
+﻿using NLog;
 using SharpCompress.Archives;
 using SharpCompress.Archives.Tar;
 using SharpCompress.Common;
@@ -66,14 +65,14 @@ namespace Tekook.BackupR.Lib.Backups
                     Logger.Trace("Done.");
                 }
                 this.BackupFile = new FileInfo(tempFile);
-                Logger.Info("Archive created.", ByteSize.FromBytes(this.BackupFile.Length));
+                Logger.Debug("Archive created at {file}", tempFile);
             });
             return this.BackupFile;
         }
 
         public override string ToString()
         {
-            return $"{{{this.GetType().Name}: {this.Settings.Path}}}";
+            return $"{{{this.GetType().Name}|{this.Settings.Name}: {this.Settings.Path}}}";
         }
     }
 }

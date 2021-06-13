@@ -48,7 +48,7 @@ namespace Tekook.BackupR.Lib.Backups
                     throw new BackupException(this, "Command did not return any file or the returned file does not exist!");
                 }
                 this.BackupFile = new FileInfo(o);
-                Logger.Info("Command created backup successfully -> {file}", this.BackupFile.FullName);
+                Logger.Debug("Command created backup successfully -> {file}", this.BackupFile.FullName);
                 return this.BackupFile;
             }
             else
@@ -59,7 +59,7 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override string ToString()
         {
-            return $"{{{this.GetType().Name}: {this.Settings.Command}}}";
+            return $"{{{this.GetType().Name}|{this.Settings.Name}: {this.Settings.Command}}}";
         }
     }
 }
