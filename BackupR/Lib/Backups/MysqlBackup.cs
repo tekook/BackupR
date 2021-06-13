@@ -183,6 +183,7 @@ namespace Tekook.BackupR.Lib.Backups
 
         private async Task<string> MakeDump(string file, string db = null)
         {
+            Logger.Debug("Dumping database {database}", db);
             string args = GetArguments(file, db);
             var process = new Process
             {
@@ -192,7 +193,6 @@ namespace Tekook.BackupR.Lib.Backups
                     Arguments = args,
                     UseShellExecute = false,
                     CreateNoWindow = true,
-                    RedirectStandardOutput = true,
                     RedirectStandardError = true
                 }
             };
@@ -205,6 +205,7 @@ namespace Tekook.BackupR.Lib.Backups
             else
             {
                 string error = await process.StandardError.ReadToEndAsync();
+                Logger.Trace("mysqldump stderr: {stderr}", error);
                 throw new BackupException(this, error);
             }
         }
