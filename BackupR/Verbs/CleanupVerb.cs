@@ -1,6 +1,6 @@
 ﻿using ByteSizeLib;
 using Config.Net;
-using System;
+using NLog;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,6 +12,8 @@ namespace Tekook.BackupR.Verbs
 {
     internal class CleanupVerb : VerbR.Verb<CleanupOptions, IConfig>
     {
+        protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
+
         public CleanupVerb(CleanupOptions options) : base(options)
         {
             this.Resolver = new ConfigNetResolver<IConfig, CleanupOptions>((builder) => builder.UseJsonFile(options.Config));
@@ -19,7 +21,9 @@ namespace Tekook.BackupR.Verbs
 
         public override async Task<int> InvokeAsync()
         {
+            Logger.Info("Starting cleanup");
             IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
+            Logger.Debug("Provider: {provider}", provider.GetType().Name);
             IContainer root = await provider.GetRoot();
 
             foreach (IContainerConfig configContainer in this.Config.Containers)
@@ -27,7 +31,7 @@ namespace Tekook.BackupR.Verbs
                 IContainer container = await provider.GetContainer(root.Path + configContainer.Path);
                 if (container == null)
                 {
-                    Console.WriteLine($"Container not found for {configContainer.Path}");
+                    Logger.Info("Container not found for {path}", configContainer.Path);
                     continue;
                 }
                 if (configContainer.MaxSize != null)
@@ -45,7 +49,7 @@ namespace Tekook.BackupR.Verbs
         private async Task HandleMaxFiles(IContainerConfig configContainer, IContainer container)
         {
             var files = container.Items.Where(x => !x.Deleted).OrderBy(x => x.Date).ToList();
-            Console.WriteLine($"Handling {configContainer.Path} with MaxFiles: {configContainer.MaxFiles}. Current: {files.Count}");
+            Logger.Info("Handling {path} with MaxFiles: {max_files}. Current: {file_count}", configContainer.Path, configContainer.MaxFiles, files.Count);
             var toDelete = new List<IItem>();
             while (files.Count > configContainer.MinFiles && files.Count > configContainer.MaxFiles)
             {
@@ -54,7 +58,7 @@ namespace Tekook.BackupR.Verbs
             }
             foreach (var item in toDelete)
             {
-                Console.WriteLine($"Deleting {item.Path} -> {ByteSize.FromBytes(item.Size)}");
+                Logger.Info("Deleting {path} -> {size}", item.Path, ByteSize.FromBytes(item.Size));
                 await item.Delete();
             }
         }
@@ -64,7 +68,7 @@ namespace Tekook.BackupR.Verbs
             ByteSize max = ByteSize.Parse(configContainer.MaxSize);
             var files = container.Items.Where(x => !x.Deleted).OrderBy(x => x.Date).ToList();
             ByteSize containerSize = ByteSize.FromBytes(files.Sum(x => x.Size));
-            Console.WriteLine($"Handling {configContainer.Path} with MaxSize: {max}. Current: {containerSize}");
+            Logger.Info("Handling {path} with MaxSize: {max_size}. Current: {container_size}", configContainer.Path, max, containerSize);
             if (containerSize > max)
             {
                 var toDelete = new List<IItem>();
@@ -75,7 +79,7 @@ namespace Tekook.BackupR.Verbs
                 }
                 foreach (var item in toDelete)
                 {
-                    Console.WriteLine($"Deleting {item.Path} -> {ByteSize.FromBytes(item.Size)}");
+                    Logger.Info("Deleting {path} -> {size}", item.Path, ByteSize.FromBytes(item.Size));
                     await item.Delete();
                 }
             }
