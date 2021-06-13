@@ -5,7 +5,7 @@
     <TargetFramework>net5.0</TargetFramework>
     <RootNamespace>Tekook.BackupR</RootNamespace>
     <StartupObject>Tekook.BackupR.Program</StartupObject>
-    <AssemblyName>Tekook.BackupR</AssemblyName>
+    <AssemblyName>BackupR</AssemblyName>
     <Version>0.0.1</Version>
     <Description>Backup Generator and Manager</Description>
     <Copyright>Julian Tekook 2020</Copyright>
