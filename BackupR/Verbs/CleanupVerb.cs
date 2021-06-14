@@ -1,7 +1,9 @@
 ﻿using ByteSizeLib;
 using Config.Net;
 using NLog;
+using System;
 using System.Collections.Generic;
+using System.Configuration.Provider;
 using System.Linq;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Config;
@@ -21,27 +23,57 @@ namespace Tekook.BackupR.Verbs
 
         public override async Task<int> InvokeAsync()
         {
-            Logger.Info("Starting cleanup");
-            IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
-            Logger.Debug("Provider: {provider}", provider.GetType().Name);
-            IContainer root = await provider.GetRoot();
-
-            foreach (IContainerConfig configContainer in this.Config.Containers)
+            try
             {
-                IContainer container = await provider.GetContainer(root.Path + configContainer.Path);
-                if (container == null)
+                Logger.Info("Starting cleanup");
+                IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
+                Logger.Debug("Provider: {provider}", provider.GetType().Name);
+                IContainer root = await provider.GetRoot();
+
+                foreach (IContainerConfig configContainer in this.Config.Containers)
                 {
-                    Logger.Info("Container not found for {path}", configContainer.Path);
-                    continue;
+                    IContainer container = await provider.GetContainer(root.Path + configContainer.Path);
+                    if (container == null)
+                    {
+                        Logger.Info("Container not found for {path}", configContainer.Path);
+                        continue;
+                    }
+                    if (configContainer.MaxSize != null)
+                    {
+                        try
+                        {
+                            await HandleMaxSize(configContainer, container);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error("Error while handling maxsize of {container}", container);
+                            Logger.Error(e, e.Message);
+                        }
+                    }
+                    if (configContainer.MaxFiles != null)
+                    {
+                        try
+                        {
+                            await HandleMaxFiles(configContainer, container);
+                        }
+                        catch (Exception e)
+                        {
+                            Logger.Error("Error while handling maxfiles of {container}", container);
+                            Logger.Error(e, e.Message);
+                        }
+                    }
                 }
-                if (configContainer.MaxSize != null)
-                {
-                    await HandleMaxSize(configContainer, container);
-                }
-                if (configContainer.MaxFiles != null)
-                {
-                    await HandleMaxFiles(configContainer, container);
-                }
+            }
+            catch (ProviderException e)
+            {
+                Logger.Error(e, e.Message);
+                return 1;
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Unkown error caught -> {type}", e.GetType().FullName);
+                Logger.Error(e);
+                return 1;
             }
             return 0;
         }

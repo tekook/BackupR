@@ -42,7 +42,7 @@ namespace Tekook.BackupR.Verbs
             Logger.Info("------- Handling {type:l}s: {count} -------", typeof(T).Name, settings.Count());
             foreach (T2 setting in settings)
             {
-                if(setting.Disabled)
+                if (setting.Disabled)
                 {
                     Logger.Debug("Skipping disabled task: {name}", setting.Name);
                     continue;
@@ -56,7 +56,16 @@ namespace Tekook.BackupR.Verbs
                 }
                 catch (BackupException e)
                 {
-                    Logger.Error(e.Message, e);
+                    LogException(e);
+                }
+                catch (ProviderException e)
+                {
+                    LogException(e);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error("Unkown error caught -> {type}!", e.GetType().FullName);
+                    LogException(e);
                 }
                 finally
                 {
@@ -88,6 +97,15 @@ namespace Tekook.BackupR.Verbs
             else
             {
                 throw new BackupException(task, "Task did not create any backup file.");
+            }
+        }
+
+        private void LogException(Exception e)
+        {
+            Logger.Error(e, e.Message);
+            if (e.InnerException != null)
+            {
+                LogException(e.InnerException);
             }
         }
     }

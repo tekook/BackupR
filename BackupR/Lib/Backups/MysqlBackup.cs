@@ -39,13 +39,14 @@ namespace Tekook.BackupR.Lib.Backups
             this.CleanupTask();
             this.TempDirectory = GetTempDir();
             this.TempFile = Path.GetTempFileName();
+            Logger.Info("Enumerating databases to backup...");
             List<string> dbs = this.Settings.FetchDatabases ? await this.FetchDatabases() : new List<string>(this.Settings.Databases ?? Array.Empty<string>());
             if (dbs.Count == 0)
             {
                 dbs.Add(null);
             }
             List<FileInfo> files = new();
-
+            Logger.Info("Databases to backup: {database_count}", dbs.Count);
             string name, dump;
             foreach (string db in dbs)
             {
@@ -105,29 +106,36 @@ namespace Tekook.BackupR.Lib.Backups
 
         private async Task<List<string>> FetchDatabases()
         {
-            Logger.Trace("fetching databases");
-            var x = new MySqlConnectionStringBuilder();
-            x.UserID = this.Settings.Username;
-            x.Password = this.Settings.Password;
-            x.Server = this.Settings.Host;
-            List<string> dbs = new();
-            using (var connection = new MySqlConnection(x.ToString()))
+            try
             {
-                await connection.OpenAsync();
-                using var command = new MySqlCommand("show databases;", connection);
-                using var reader = await command.ExecuteReaderAsync();
-                string db;
-                while (await reader.ReadAsync())
+                Logger.Debug("Connecting to {host} to fetch available databases.", this.Settings.Host);
+                var x = new MySqlConnectionStringBuilder();
+                x.UserID = this.Settings.Username;
+                x.Password = this.Settings.Password;
+                x.Server = this.Settings.Host;
+                List<string> dbs = new();
+                using (var connection = new MySqlConnection(x.ToString()))
                 {
-                    db = reader.GetString(0);
-                    if (!this.Settings.Excludes.Contains(db))
+                    await connection.OpenAsync();
+                    using var command = new MySqlCommand("show databases;", connection);
+                    using var reader = await command.ExecuteReaderAsync();
+                    string db;
+                    while (await reader.ReadAsync())
                     {
-                        dbs.Add(db);
+                        db = reader.GetString(0);
+                        if (!this.Settings.Excludes.Contains(db))
+                        {
+                            dbs.Add(db);
+                        }
                     }
                 }
+                Logger.Debug("Fetched databases: [{databases}]", string.Join(", ", dbs));
+                return dbs;
             }
-            Logger.Trace("found [{databases}]", string.Join(", ", dbs));
-            return dbs;
+            catch (MySqlException e)
+            {
+                throw new BackupException(this, "Failed to enumerate databases", e);
+            }
         }
 
         private string GetArguments(string file, string db = null)

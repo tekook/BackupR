@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
+using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Ftp
 {
@@ -62,48 +63,67 @@ namespace Tekook.BackupR.Lib.Ftp
         /// <inheritdoc/>
         public async Task<IContainer> GetContainer(string path, bool recursive = false)
         {
-            await this.EnsureClientConnected();
-            FtpContainer root = new FtpContainer(this, path);
-            FtpContainer container;
-            foreach (FtpListItem item in await this.Client.GetListingAsync(path))
+            try
             {
-                if (item.Type == FtpFileSystemObjectType.File)
+                await this.EnsureClientConnected();
+                FtpContainer root = new FtpContainer(this, path);
+                FtpContainer container;
+                foreach (FtpListItem item in await this.Client.GetListingAsync(path))
                 {
-                    root.Items.Add(new FtpItem(root)
+                    if (item.Type == FtpFileSystemObjectType.File)
                     {
-                        Date = await this.Client.GetModifiedTimeAsync(item.FullName),
-                        Name = item.Name,
-                        Path = item.FullName,
-                        Size = await this.Client.GetFileSizeAsync(item.FullName),
-                    });
+                        root.Items.Add(new FtpItem(root)
+                        {
+                            Date = await this.Client.GetModifiedTimeAsync(item.FullName),
+                            Name = item.Name,
+                            Path = item.FullName,
+                            Size = await this.Client.GetFileSizeAsync(item.FullName),
+                        });
+                    }
+                    else if (item.Type == FtpFileSystemObjectType.Directory && recursive)
+                    {
+                        container = (FtpContainer)await this.GetContainer(item.FullName, recursive);
+                        root.Containers.Add(container);
+                    }
                 }
-                else if (item.Type == FtpFileSystemObjectType.Directory && recursive)
-                {
-                    container = (FtpContainer)await this.GetContainer(item.FullName, recursive);
-                    root.Containers.Add(container);
-                }
+                return root;
             }
-            return root;
+            catch (Exception e)
+            {
+                throw new ProviderException(e.Message, e);
+            }
         }
 
         /// <inheritdoc/>
         public async Task<IContainer> GetRoot()
         {
-            await this.EnsureClientConnected();
-            return await GetContainer(this.Config.Path, true);
+            try
+            {
+                await this.EnsureClientConnected();
+                return await GetContainer(this.Config.Path, true);
+            }
+            catch (Exception e)
+            {
+                throw new ProviderException(e.Message, e);
+            }
         }
 
         /// <inheritdoc/>
         public async Task Upload(FileInfo file, IContainer target, string name = null)
         {
-            await this.EnsureClientConnected();
-            if (target.Provider != this)
+            try
             {
-                throw new InvalidOperationException("Invalid container provided. Provider does not match!");
-            }
-            using (FileStream stream = file.OpenRead())
-            {
+                await this.EnsureClientConnected();
+                if (target.Provider != this)
+                {
+                    throw new InvalidOperationException("Invalid container provided. Provider does not match!");
+                }
+                using FileStream stream = file.OpenRead();
                 await this.Client.UploadAsync(stream, Path.Combine(target.Path, name ?? file.Name));
+            }
+            catch (FtpException e)
+            {
+                throw new ProviderException("Failed to upload file to provider", e);
             }
         }
 
