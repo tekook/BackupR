@@ -23,6 +23,7 @@
     "Commands": [
       {
         "Name": "Command-Backup",
+        "Disabled":  true,
         "UploadName": "etc_$date",
         "UploadPath": "etc",
         "Command": "powershell",

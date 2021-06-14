@@ -42,6 +42,11 @@ namespace Tekook.BackupR.Verbs
             Logger.Info("------- Handling {type:l}s: {count} -------", typeof(T).Name, settings.Count());
             foreach (T2 setting in settings)
             {
+                if(setting.Disabled)
+                {
+                    Logger.Debug("Skipping disabled task: {name}", setting.Name);
+                    continue;
+                }
                 Logger.Info("Starting: {backup_name}", setting.Name);
                 T task = (T)Activator.CreateInstance(typeof(T), setting);
                 try
