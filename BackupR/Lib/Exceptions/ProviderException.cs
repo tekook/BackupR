@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 
 namespace Tekook.BackupR.Lib.Exceptions
 {
-    internal class ProviderException : Exception
+    internal class ProviderException : BaseException
     {
         public ProviderException()
         {

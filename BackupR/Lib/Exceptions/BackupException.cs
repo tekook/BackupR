@@ -3,7 +3,7 @@ using Tekook.BackupR.Lib.Contracts;
 
 namespace Tekook.BackupR.Lib.Exceptions
 {
-    internal class BackupException : Exception
+    internal class BackupException : BaseException
     {
         public IBackupTask BackupTask { get; }
 
