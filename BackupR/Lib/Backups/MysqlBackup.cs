@@ -224,8 +224,8 @@ namespace Tekook.BackupR.Lib.Backups
             else
             {
                 string error = await process.StandardError.ReadToEndAsync();
-                Logger.Trace("mysqldump stderr: {stderr}", error);
-                throw new BackupException(this, error);
+                Logger.Trace("mysqldump stderr: {stderr}", error.Trim());
+                throw new BackupException(this, error.Trim());
             }
         }
     }

@@ -42,6 +42,7 @@ namespace Tekook.BackupR.Verbs
             Logger.Info("------- Handling {type:l}s: {count} -------", typeof(T).Name, settings.Count());
             foreach (T2 setting in settings)
             {
+                Exception exception = null;
                 if (setting.Disabled)
                 {
                     Logger.Debug("Skipping disabled task: {name}", setting.Name);
@@ -58,21 +59,32 @@ namespace Tekook.BackupR.Verbs
                 {
                     Logger.Error("Backup encountered an error and could not be completed. {error}", e.Message);
                     LogException(e);
+                    exception = e;
                 }
                 catch (ProviderException e)
                 {
+                    Logger.Error("Encountered an error with the provider: {error}", e.Message);
                     LogException(e);
+                    exception = e;
                 }
                 catch (Exception e)
                 {
                     Logger.Error("Unkown error caught -> {type}!", e.GetType().FullName);
                     LogException(e);
+                    exception = e;
                 }
                 finally
                 {
                     task?.RemoveBackup();
                     task?.CleanupTask();
-                    Logger.Info("------- Task done -------");
+                    if (exception == null)
+                    {
+                        Logger.Info("------- Task: {backup_name} finished -------", setting.Name);
+                    }
+                    else
+                    {
+                        Logger.Error("------- Task: {backup_name} failed with errors. Backup has not been created. -------", setting.Name);
+                    }
                 }
             }
         }
