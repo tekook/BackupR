@@ -10,6 +10,7 @@
   "Backup": {
     "Folders": [
       {
+        "Disabled": true,
         "Name": "Home-Backup",
         "UploadName": "home_$date.tar.gz",
         "UploadPath": "home",
@@ -23,7 +24,7 @@
     "Commands": [
       {
         "Name": "Command-Backup",
-        "Disabled":  true,
+        "Disabled": true,
         "UploadName": "etc_$date",
         "UploadPath": "etc",
         "Command": "powershell",
@@ -36,15 +37,16 @@
         "UploadPath": "mysql",
         "UploadName": "mysql_$date.tar.gz",
         "MysqlDumpPath": "C:\\tmp\\b\\mysql\\mysqldump.exe",
-        "Host": "mysql.dev.local",
+        "Host": "mysql-db.dev.local",
         "Username": "root",
         "Password": "Docker_1337",
+        "PasswordViaEnvironment": true,
         "Databases": [
           "alertify",
-          "camboard",
-          "wcontacts"
+          "laravel",
+          "error"
         ],
-        "FetchDatabases": true,
+        "FetchDatabases": false,
         "Excludes": [
           "information_schema",
           "performance_schema"

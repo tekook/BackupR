@@ -138,7 +138,7 @@ namespace Tekook.BackupR.Lib.Backups
             }
         }
 
-        private string GetArguments(string file, string db = null)
+        private string GetArguments(string file, string db = null, bool showPassword = false)
         {
             List<string> args = new();
             if (this.Settings.AddLocks)
@@ -161,9 +161,10 @@ namespace Tekook.BackupR.Lib.Backups
             {
                 args.Add("--flush-privileges");
             }
-            if (!string.IsNullOrEmpty(this.Settings.Password))
+            if (!this.Settings.PasswordViaEnvironment && !string.IsNullOrEmpty(this.Settings.Password))
             {
-                args.Add($"--password=\"{this.Settings.Password}\"");
+                string pw = !showPassword ? "*********" : this.Settings.Password;
+                args.Add($"--password=\"{pw}\"");
             }
             if (!string.IsNullOrEmpty(this.Settings.Username))
             {
@@ -196,7 +197,9 @@ namespace Tekook.BackupR.Lib.Backups
         private async Task<string> MakeDump(string file, string db = null)
         {
             Logger.Debug("Dumping database {database}", db);
-            string args = GetArguments(file, db);
+            Logger.Debug($"Command: {GetArguments(file, db)}");
+            string args = GetArguments(file, db, true);
+
             var process = new Process
             {
                 StartInfo =
@@ -208,6 +211,10 @@ namespace Tekook.BackupR.Lib.Backups
                     RedirectStandardError = true
                 }
             };
+            if (this.Settings.PasswordViaEnvironment && !string.IsNullOrEmpty(this.Settings.Password))
+            {
+                process.StartInfo.EnvironmentVariables["MYSQL_PWD"] = this.Settings.Password;
+            }
             process.Start();
             await process.WaitForExitAsync();
             if (process.ExitCode == 0)

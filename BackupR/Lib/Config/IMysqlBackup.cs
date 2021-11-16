@@ -17,5 +17,6 @@ namespace Tekook.BackupR.Lib.Config
         public bool Routines { get; }
         public bool Triggers { get; }
         public string Username { get; }
+        public bool PasswordViaEnvironment { get; }
     }
 }

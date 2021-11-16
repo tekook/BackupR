@@ -56,6 +56,7 @@ namespace Tekook.BackupR.Verbs
                 }
                 catch (BackupException e)
                 {
+                    Logger.Error("Backup encountered an error and could not be completed. {error}", e.Message);
                     LogException(e);
                 }
                 catch (ProviderException e)
