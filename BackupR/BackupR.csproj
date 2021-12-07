@@ -8,12 +8,13 @@
     <AssemblyName>BackupR</AssemblyName>
     <Version>0.0.1</Version>
     <Description>Backup Generator and Manager</Description>
-    <Copyright>Julian Tekook 2020</Copyright>
+    <Copyright>Julian Tekook 2020-2021</Copyright>
     <PackageProjectUrl>https://github.com/tekook/BackupR</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tekook/BackupR.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>backupr,backup,manager,generator,backupcreator</PackageTags>
     <PackageReleaseNotes>Initial Version</PackageReleaseNotes>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
     <PackageReference Include="ByteSize" Version="2.1.1" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <PackageReference Include="FluentFTP" Version="35.0.5" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
     <PackageReference Include="MySqlConnector" Version="2.0.0" />
     <PackageReference Include="NLog" Version="4.7.12" />
     <PackageReference Include="SharpCompress" Version="0.30.0" />
