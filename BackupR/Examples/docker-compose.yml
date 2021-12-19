@@ -1,10 +1,20 @@
 ﻿version: '3.5'
 
 services:
-  backupr:
+  backupr-ftp:
     image: tekook/backupr:dev
     volumes:
-      - ./docker-fs.json:/conf/config.json
+      - ./ftp-docker.json:/conf/config.json
+      - ./logs:/app/logs
+    command: backup --config /conf/config.json
+    networks:
+      - backend
+      - ftp_backend
+  backupr-fs:
+    image: tekook/backupr:dev
+    volumes:
+      - ./fs-docker.json:/conf/config.json
+      - ./data:/data
       - ./logs:/app/logs
     command: backup --config /conf/config.json
     networks:

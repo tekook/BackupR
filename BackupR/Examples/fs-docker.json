@@ -2,7 +2,7 @@
   "Name": "ftp",
   "Type": "Tekook.BackupR.Lib.Filesystem.FsProvider",
   "Provider": {
-    "Path": "C:\\tmp\\data"
+    "Path": "/data"
   },
   "Backup": {
     "Folders": [

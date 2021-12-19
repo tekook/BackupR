@@ -37,10 +37,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Examples\docker-fs.json">
+    <None Update="Examples\fs-docker.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Examples\docker-ftp.json">
+    <None Update="Examples\ftp-docker.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Examples\fs.json">
