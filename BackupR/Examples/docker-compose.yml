@@ -4,7 +4,7 @@ services:
   backupr:
     image: tekook/backupr:dev
     volumes:
-      - ./docker-ftp.json:/conf/config.json
+      - ./docker-fs.json:/conf/config.json
       - ./logs:/app/logs
     command: backup --config /conf/config.json
     networks:

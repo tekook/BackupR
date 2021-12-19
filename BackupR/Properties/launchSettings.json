@@ -6,7 +6,7 @@
     },
     "BackupR backup": {
       "commandName": "Project",
-      "commandLineArgs": "backup --config=./Examples/ftp-config.json "
+      "commandLineArgs": "backup --config=./Examples/fs.json "
     },
     "Docker": {
       "commandName": "Docker"
