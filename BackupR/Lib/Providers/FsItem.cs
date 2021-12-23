@@ -2,17 +2,17 @@
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
 
-namespace Tekook.BackupR.Lib.Ftp
+namespace Tekook.BackupR.Lib.Providers
 {
     /// <summary>
-    /// Implementation for Ftp.
+    /// Implementation for Filesystem.
     /// </summary>
-    public class FtpItem : IItem
+    public class FsItem : IItem
     {
         /// <summary>
-        /// The <see cref="FtpContainer"/> this <see cref="FtpItem"/> belongs to.
+        /// The <see cref="FsContainer"/> this <see cref="FsItem"/> belongs to.
         /// </summary>
-        public FtpContainer Container { get; }
+        public FsContainer Container { get; }
 
         /// <inheritdoc/>
         IContainer IItem.Container => this.Container;
@@ -33,11 +33,11 @@ namespace Tekook.BackupR.Lib.Ftp
         public long Size { get; set; }
 
         /// <summary>
-        /// Creates a new <see cref="FtpItem"/>.
+        /// Creates a new <see cref="FsItem"/>.
         /// </summary>
-        /// <param name="container"><see cref="FtpContainer"/> this item belongs to.</param>
+        /// <param name="container"><see cref="FsContainer"/> this item belongs to.</param>
         /// <exception cref="ArgumentNullException">Thrown if container is null</exception>
-        public FtpItem(FtpContainer container)
+        public FsItem(FsContainer container)
         {
             this.Container = container ?? throw new ArgumentNullException(nameof(container));
         }

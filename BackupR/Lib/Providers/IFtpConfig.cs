@@ -1,6 +1,5 @@
-﻿using System.Net;
-
-namespace Tekook.BackupR.Lib.Ftp
+﻿
+namespace Tekook.BackupR.Lib.Providers
 {
     /// <summary>
     /// Configuration for an <see cref="FtpProvider"/>.

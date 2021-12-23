@@ -1,18 +1,18 @@
 ﻿using Tekook.BackupR.Lib.Contracts;
 
-namespace Tekook.BackupR.Lib.Ftp
+namespace Tekook.BackupR.Lib.Providers
 {
     /// <summary>
-    /// Implementation of an FtpContainer
+    /// Implementation of an FsContainer
     /// </summary>
-    public class FtpContainer : Container<FtpProvider, FtpContainer, FtpItem>, IContainer
+    public class FsContainer : Container<FsProvider, FsContainer, FsItem>, IContainer
     {
         /// <summary>
-        /// Creates a new <see cref="FtpContainer"/>
+        /// Creates a new <see cref="FsContainer"/>
         /// </summary>
         /// <param name="provider">Provider this container belongs to.</param>
         /// <param name="path">Path this container is set on.</param>
-        public FtpContainer(FtpProvider provider, string path) : base(provider, path)
+        public FsContainer(FsProvider provider, string path) : base(provider, path)
         {
         }
     }

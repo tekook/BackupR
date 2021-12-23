@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Exceptions;
 
-namespace Tekook.BackupR.Lib.Filesystem
+namespace Tekook.BackupR.Lib.Providers
 {
     public class FsProvider : IProvider, IDisposable
     {

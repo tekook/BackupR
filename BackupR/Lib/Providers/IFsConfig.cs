@@ -1,4 +1,4 @@
-﻿namespace Tekook.BackupR.Lib.Filesystem
+﻿namespace Tekook.BackupR.Lib.Providers
 {
     /// <summary>
     /// Configuration for an <see cref="FsProvider"/>.
