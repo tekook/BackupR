@@ -65,7 +65,7 @@ namespace Tekook.BackupR.Lib.Providers
                 await this.EnsureClientConnected();
                 SftpContainer root = new SftpContainer(this, path);
                 SftpContainer container;
-                foreach (SftpFile item in this.Client.ListDirectory(path))
+                foreach (SftpFile item in await Task.Run(() => this.Client.ListDirectory(path)))
                 {
                     if (item.IsRegularFile)
                     {
