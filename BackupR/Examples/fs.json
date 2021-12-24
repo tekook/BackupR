@@ -40,8 +40,7 @@
         "PasswordViaEnvironment": true,
         "Databases": [
           "alertify",
-          "laravel",
-          "error"
+          "laravel"
         ],
         "FetchDatabases": false,
         "Excludes": [
