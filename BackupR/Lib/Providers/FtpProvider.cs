@@ -137,6 +137,19 @@ namespace Tekook.BackupR.Lib.Providers
             }
         }
 
+        /// <inheritdoc/>
+        public async Task Validate()
+        {
+            try
+            {
+                await this.EnsureClientConnected();
+            }
+            catch (Exception e)
+            {
+                throw new ProviderException($"Could not connected to ftp host -> {e.Message}", e);
+            }
+        }
+
         /// <summary>
         /// Ensures that the <see cref="FtpClient"/> is connected.
         /// </summary>

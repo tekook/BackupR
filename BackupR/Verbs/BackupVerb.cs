@@ -27,14 +27,27 @@ namespace Tekook.BackupR.Verbs
         public override async Task<int> InvokeAsync()
         {
             Logger.Info("------- Starting backup -------");
-            this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
-            Logger.Debug("Provider: {provider}", this.Provider.GetType().Name);
-            var backup = this.Config.Backup;
-            await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
-            await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
-            await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
-            this.Provider.Dispose();
-            Logger.Info("------- Backup finished -------");
+            try
+            {
+                this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
+                Logger.Info("Validating provider: {provider}...", this.Provider.GetType().Name);
+                await this.Provider.Validate();
+                var backup = this.Config.Backup;
+                await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
+                await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
+                await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
+                Logger.Info("------- Backup finished -------");
+            }
+            catch (ProviderException e)
+            {
+                LogException(e);
+                Logger.Warn("------ Backup could be started! -------");
+                return 1;
+            }
+            finally
+            {
+                this.Provider?.Dispose();
+            }
             return 0;
         }
 

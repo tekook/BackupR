@@ -128,5 +128,14 @@ namespace Tekook.BackupR.Lib.Providers
                 throw new ProviderException("Failed to upload file to provider", e);
             }
         }
+
+        /// <inheritdoc/>
+        public async Task Validate()
+        {
+            if (!Directory.Exists(this.RootPath))
+            {
+                throw new ProviderException($"Target directory does not exist: {RootPath}");
+            }
+        }
     }
 }

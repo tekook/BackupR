@@ -52,5 +52,10 @@ namespace Tekook.BackupR.Lib.Contracts
         /// <exception cref="InvalidOperationException">Thrown when the container is not derrived from this provider.</exception>
         /// <returns></returns>
         Task Upload(FileInfo file, IContainer target, string name = null);
+
+        /// <summary>
+        /// Validates the provider.
+        /// </summary>
+        Task Validate();
     }
 }

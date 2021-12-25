@@ -26,8 +26,9 @@ namespace Tekook.BackupR.Verbs
             try
             {
                 Logger.Info("Starting cleanup");
-                IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
-                Logger.Debug("Provider: {provider}", provider.GetType().Name);
+                using IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
+                Logger.Info("Validating provider: {provider}", provider.GetType().Name);
+                await provider.Validate();
                 IContainer root = await provider.GetRoot();
 
                 foreach (IContainerConfig configContainer in this.Config.Containers)

@@ -131,6 +131,19 @@ namespace Tekook.BackupR.Lib.Providers
             await Task.Run(() => this.Client.UploadFile(stream, Combine(target.Path, name ?? file.Name)));
         }
 
+        /// <inheritdoc/>
+        public async Task Validate()
+        {
+            try
+            {
+                await this.EnsureClientConnected();
+            }
+            catch (Exception e)
+            {
+                throw new ProviderException($"Could not connected to sftp host -> {e.Message}", e);
+            }
+        }
+
         /// <summary>
         /// Ensures that the <see cref="SftpClient"/> is connected.
         /// </summary>
