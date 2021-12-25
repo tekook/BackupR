@@ -24,7 +24,7 @@ namespace Tekook.BackupR.Lib.Providers
         /// <summary>
         /// Port to use.
         /// </summary>
-        public int Port { get; set; }
+        public int? Port { get; set; }
 
         /// <summary>
         /// Username to auth with.

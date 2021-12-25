@@ -43,6 +43,12 @@ namespace Tekook.BackupR.Lib.Providers
         }
 
         /// <inheritdoc/>
+        public string Combine(params string[] paths)
+        {
+            return Path.Combine(paths);
+        }
+
+        /// <inheritdoc/>
         public async Task Delete(IItem item)
         {
             if (item.Container.Provider != this)

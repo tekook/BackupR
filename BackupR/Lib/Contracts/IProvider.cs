@@ -15,6 +15,13 @@ namespace Tekook.BackupR.Lib.Contracts
         string RootPath { get; }
 
         /// <summary>
+        /// Combines paths accordingly to the provider.
+        /// </summary>
+        /// <param name="paths">path of strings to combine.</param>
+        /// <returns></returns>
+        string Combine(params string[] paths);
+
+        /// <summary>
         /// Deletes an item from this provider.
         /// </summary>
         /// <exception cref="InvalidOperationException">Thrown when the item is not derrived from this provider.</exception>

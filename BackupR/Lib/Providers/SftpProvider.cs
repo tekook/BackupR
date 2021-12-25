@@ -39,6 +39,11 @@ namespace Tekook.BackupR.Lib.Providers
             this.Config = Resolver.ResolveConfig<ISftpConfig>(options);
         }
 
+        public string Combine(params string[] paths)
+        {
+            return Path.Combine(paths).Replace('\\', '/');
+        }
+
         /// <inheritdoc/>
         public async Task Delete(IItem item)
         {
@@ -62,8 +67,13 @@ namespace Tekook.BackupR.Lib.Providers
         {
             try
             {
+                path = Combine(path);
                 await this.EnsureClientConnected();
                 SftpContainer root = new SftpContainer(this, path);
+                if (!this.Client.Exists(path))
+                {
+                    this.Client.CreateDirectory(path);
+                }
                 SftpContainer container;
                 foreach (SftpFile item in await Task.Run(() => this.Client.ListDirectory(path)))
                 {
@@ -114,7 +124,7 @@ namespace Tekook.BackupR.Lib.Providers
                 throw new InvalidOperationException("Invalid container provided. Provider does not match!");
             }
             using FileStream stream = file.OpenRead();
-            await Task.Run(() => this.Client.UploadFile(stream, Path.Combine(target.Path, name ?? file.Name)));
+            await Task.Run(() => this.Client.UploadFile(stream, Combine(target.Path, name ?? file.Name)));
         }
 
         /// <summary>
@@ -125,7 +135,7 @@ namespace Tekook.BackupR.Lib.Providers
         {
             if (this.Client == null)
             {
-                this.Client = new SftpClient(this.Config.Host, this.Config.Port, this.Config.Username, this.Config.Password);
+                this.Client = new SftpClient(this.Config.Host, this.Config.Port ?? 22, this.Config.Username, this.Config.Password);
             }
             if (!this.Client.IsConnected)
             {
