@@ -7,7 +7,7 @@ namespace Tekook.BackupR.Lib.Contracts
     /// <summary>
     /// Contract for a provider
     /// </summary>
-    public interface IProvider
+    public interface IProvider : IDisposable
     {
         /// <summary>
         /// Path of the Root of this provider.
