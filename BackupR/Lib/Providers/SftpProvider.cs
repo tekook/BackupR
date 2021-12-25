@@ -39,6 +39,7 @@ namespace Tekook.BackupR.Lib.Providers
             this.Config = Resolver.ResolveConfig<ISftpConfig>(options);
         }
 
+        /// <inheritdoc/>
         public string Combine(params string[] paths)
         {
             return Path.Combine(paths).Replace('\\', '/');
@@ -70,10 +71,13 @@ namespace Tekook.BackupR.Lib.Providers
                 path = Combine(path);
                 await this.EnsureClientConnected();
                 SftpContainer root = new SftpContainer(this, path);
-                if (!this.Client.Exists(path))
+                await Task.Run(() =>
                 {
-                    this.Client.CreateDirectory(path);
-                }
+                    if (!this.Client.Exists(path))
+                    {
+                        this.Client.CreateDirectory(path);
+                    }
+                });
                 SftpContainer container;
                 foreach (SftpFile item in await Task.Run(() => this.Client.ListDirectory(path)))
                 {

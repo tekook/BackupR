@@ -74,6 +74,10 @@ namespace Tekook.BackupR.Lib.Providers
                 await this.EnsureClientConnected();
                 FtpContainer root = new FtpContainer(this, path);
                 FtpContainer container;
+                if (!await this.Client.DirectoryExistsAsync(path))
+                {
+                    await this.Client.CreateDirectoryAsync(path);
+                }
                 foreach (FtpListItem item in await this.Client.GetListingAsync(path))
                 {
                     if (item.Type == FtpFileSystemObjectType.File)
