@@ -14,9 +14,9 @@ namespace Tekook.BackupR.Lib.Config
         public string Host { get; }
         public string MysqlDumpPath { get; }
         public string Password { get; }
+        public bool PasswordViaEnvironment { get; }
         public bool Routines { get; }
         public bool Triggers { get; }
         public string Username { get; }
-        public bool PasswordViaEnvironment { get; }
     }
 }

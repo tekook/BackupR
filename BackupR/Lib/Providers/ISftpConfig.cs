@@ -1,5 +1,4 @@
-﻿
-namespace Tekook.BackupR.Lib.Providers
+﻿namespace Tekook.BackupR.Lib.Providers
 {
     /// <summary>
     /// Configuration for an <see cref="SftpProvider"/>.
