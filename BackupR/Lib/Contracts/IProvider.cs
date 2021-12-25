@@ -54,8 +54,10 @@ namespace Tekook.BackupR.Lib.Contracts
         Task Upload(FileInfo file, IContainer target, string name = null);
 
         /// <summary>
-        /// Validates the provider.
+        /// Validates the provider for functionality.
+        /// Throws an <see cref="Exceptions.ProviderException"/> when not able to connect or initialize.
         /// </summary>
+        /// <exception cref="Exceptions.ProviderException">Thrown if any error is encounterd while connecting to the provider.</exception>
         Task Validate();
     }
 }
