@@ -8,9 +8,6 @@
       "commandName": "Project",
       "commandLineArgs": "backup --config=./Examples/fs.json "
     },
-    "Docker": {
-      "commandName": "Docker"
-    },
     "BackupR - Err": {
       "commandName": "Project",
       "commandLineArgs": "cleanup -c /app/json"

@@ -50,7 +50,7 @@
     <None Update="Examples\fs.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Examples\ftp-config.json">
+    <None Update="Examples\ftp.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="nlog.config">
