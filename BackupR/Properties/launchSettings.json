@@ -18,6 +18,10 @@
     "BackupR sftp": {
       "commandName": "Project",
       "commandLineArgs": "backup --config=./Examples/sftp.json "
+    },
+    "Cleanup - SFTP": {
+      "commandName": "Project",
+      "commandLineArgs": "cleanup --config=./Examples/sftp.json "
     }
   }
 }

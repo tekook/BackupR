@@ -59,6 +59,24 @@ namespace Tekook.BackupR.Lib
             this.Name = System.IO.Path.GetFileName(path);
         }
 
+        /// <inheritdoc/>
+        public IContainer GetContainer(string path)
+        {
+            if (string.IsNullOrEmpty(path))
+            {
+                throw new ArgumentNullException(nameof(path));
+            }
+            path = path.TrimStart(this.Provider.Seperator);
+            List<string> paths = path.Split(this.Provider.Seperator).ToList();
+            IContainer container = this.Containers.FirstOrDefault(x => x.Name == paths[0]);
+            if (container != null && paths.Count > 1)
+            {
+                paths.RemoveAt(0);
+                return container.GetContainer(string.Join(this.Provider.Seperator, paths));
+            }
+            return container;
+        }
+
         public override string ToString()
         {
             return $"{this.GetType().Name}:{this.Path} ({this.ReadableSize})";

@@ -11,6 +11,9 @@ namespace Tekook.BackupR.Lib.Providers
         /// <inheritdoc/>
         public string RootPath => this.Config.Path;
 
+        /// <inheritdoc/>
+        public char Seperator { get => Path.DirectorySeparatorChar; }
+
         /// <summary>
         /// Configuration for this provider.
         /// </summary>

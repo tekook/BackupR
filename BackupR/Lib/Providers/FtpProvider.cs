@@ -13,6 +13,9 @@ namespace Tekook.BackupR.Lib.Providers
         /// <inheritdoc/>
         public string RootPath => this.Config.Path;
 
+        /// <inheritdoc/>
+        public char Seperator { get; } = '/';
+
         /// <summary>
         /// FtpClient this provider uses.
         /// </summary>

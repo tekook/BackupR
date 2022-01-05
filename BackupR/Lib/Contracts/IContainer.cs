@@ -40,6 +40,13 @@ namespace Tekook.BackupR.Lib.Contracts
         long Size { get; }
 
         /// <summary>
+        /// Gets a Childcontainer from this container.
+        /// </summary>
+        /// <param name="path">The path of the container to get. Supports nested containers (e.g. folder1/folder2/folder3)</param>
+        /// <returns>The container or null if it does not exist.</returns>
+        IContainer GetContainer(string path);
+
+        /// <summary>
         /// Uploads a file to this container.
         /// </summary>
         /// <param name="file">File to upload.</param>

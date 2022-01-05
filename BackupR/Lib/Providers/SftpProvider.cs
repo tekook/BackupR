@@ -13,6 +13,9 @@ namespace Tekook.BackupR.Lib.Providers
         /// <inheritdoc/>
         public string RootPath => this.Config.Path;
 
+        /// <inheritdoc/>
+        public char Seperator { get; } = '/';
+
         protected SftpClient Client { get; set; }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace Tekook.BackupR.Lib.Providers
         /// <inheritdoc/>
         public string Combine(params string[] paths)
         {
-            return Path.Combine(paths).Replace('\\', '/');
+            return Path.Combine(paths).Replace('\\', this.Seperator);
         }
 
         /// <inheritdoc/>
@@ -81,6 +84,10 @@ namespace Tekook.BackupR.Lib.Providers
                 SftpContainer container;
                 foreach (SftpFile item in await Task.Run(() => this.Client.ListDirectory(path)))
                 {
+                    if (item.Name == "." || item.Name == "..")
+                    {
+                        continue;
+                    }
                     if (item.IsRegularFile)
                     {
                         root.Items.Add(new SftpItem(root)

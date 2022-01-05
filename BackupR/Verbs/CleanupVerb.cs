@@ -33,7 +33,7 @@ namespace Tekook.BackupR.Verbs
 
                 foreach (IContainerConfig configContainer in this.Config.Containers)
                 {
-                    IContainer container = await provider.GetContainer(root.Path + configContainer.Path);
+                    IContainer container = root.GetContainer(configContainer.Path);
                     if (container == null)
                     {
                         Logger.Info("Container not found for {path}", configContainer.Path);

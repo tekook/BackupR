@@ -15,6 +15,11 @@ namespace Tekook.BackupR.Lib.Contracts
         string RootPath { get; }
 
         /// <summary>
+        /// Seperator this provider uses.
+        /// </summary>
+        char Seperator { get; }
+
+        /// <summary>
         /// Combines paths accordingly to the provider.
         /// </summary>
         /// <param name="paths">path of strings to combine.</param>
