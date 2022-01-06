@@ -10,6 +10,7 @@ using Tekook.BackupR.Lib.Backups;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Exceptions;
+using Tekook.BackupR.Lib.State;
 using Tekook.VerbR.Resolvers;
 
 namespace Tekook.BackupR.Verbs
@@ -18,6 +19,8 @@ namespace Tekook.BackupR.Verbs
     {
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IProvider Provider { get; set; }
+        protected bool Successful { get; set; } = true;
+        protected long TotalSize { get; set; } = 0;
 
         public BackupVerb(BackupOptions options) : base(options)
         {
@@ -27,6 +30,8 @@ namespace Tekook.BackupR.Verbs
         public override async Task<int> InvokeAsync()
         {
             Logger.Info("------- Starting backup -------");
+            IBackupState state = StateManager.GetState(this.Config.StateFile);
+            state.BackupStart = DateTime.Now;
             try
             {
                 this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
@@ -47,6 +52,9 @@ namespace Tekook.BackupR.Verbs
             finally
             {
                 this.Provider?.Dispose();
+                state.BackupEnd = DateTime.Now;
+                state.BackupSuccessful = this.Successful;
+                state.TotalBackupSize = this.TotalSize;
             }
             return 0;
         }
@@ -68,6 +76,7 @@ namespace Tekook.BackupR.Verbs
                 {
                     await this.HandleTask(task, setting);
                     Logger.Info("Finished: {backup_name}", setting.Name);
+                    this.TotalSize += task.BackupFile.Length;
                 }
                 catch (BackupException e)
                 {
@@ -98,6 +107,7 @@ namespace Tekook.BackupR.Verbs
                     else
                     {
                         Logger.Error("------- Task: {backup_name} failed with errors. Backup has not been created. -------", setting.Name);
+                        this.Successful = false;
                     }
                 }
             }

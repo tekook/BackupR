@@ -7,6 +7,7 @@ namespace Tekook.BackupR.Lib.Config
         IBackupConfig Backup { get; }
         IEnumerable<IContainerConfig> Containers { get; }
         string Name { get; }
+        string StateFile { get; }
         string Type { get; }
     }
 
