@@ -1,0 +1,65 @@
+﻿{
+  "Name": "ftp",
+  "Type": "Tekook.BackupR.Lib.Providers.FtpProvider",
+  "Provider": {
+    "Host": "ftp",
+    "Path": "/",
+    "Username": "docker-dev",
+    "Password": "docker-dev"
+  },
+  "Backup": {
+    "Folders": [
+      {
+        "Disabled": false,
+        "Name": "Logs-Backup",
+        "UploadName": "logs_$date.tar.gz",
+        "UploadPath": "logs",
+        "Path": "/app/logs",
+        "Compress": true,
+        "Excludes": [
+          "asd\\bl*"
+        ]
+      }
+    ],
+    "Commands": [],
+    "MysqlBackups": [
+      {
+        "Name": "Mysql-Backup",
+        "UploadPath": "mysql",
+        "UploadName": "mysql_$date.tar.gz",
+        "MysqlDumpPath": "mysqldump",
+        "Host": "mysql-db",
+        "Username": "root",
+        "Password": "Docker_1337",
+        "PasswordViaEnvironment": true,
+        "Databases": [
+          "alertify",
+          "laravel",
+          "error"
+        ],
+        "FetchDatabases": true,
+        "Excludes": [
+          "information_schema",
+          "performance_schema"
+        ],
+        "AddLocks": true,
+        "Events": true,
+        "FlushPrivileges": false,
+        "Routines": true,
+        "Triggers": true
+      }
+    ]
+  },
+  "Containers": [
+    {
+      "Path": "etc",
+      "MaxSize": "1GB",
+      "MaxFiles": 10
+    },
+    {
+      "Path": "etc2",
+      "MaxSize": "1GB",
+      "MaxFiles": null
+    }
+  ]
+}

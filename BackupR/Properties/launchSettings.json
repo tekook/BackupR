@@ -1,0 +1,24 @@
+{
+  "profiles": {
+    "BackupR": {
+      "commandName": "Project",
+      "commandLineArgs": "cleanup --config=./Examples/ftp.json"
+    },
+    "BackupR backup": {
+      "commandName": "Project",
+      "commandLineArgs": "backup --config=./Examples/fs.json "
+    },
+    "BackupR - Err": {
+      "commandName": "Project",
+      "commandLineArgs": "cleanup -c /app/json"
+    },
+    "BackupR sftp": {
+      "commandName": "Project",
+      "commandLineArgs": "backup --config=./Examples/sftp.json "
+    },
+    "Cleanup - SFTP": {
+      "commandName": "Project",
+      "commandLineArgs": "cleanup --config=./Examples/sftp.json "
+    }
+  }
+}
