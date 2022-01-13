@@ -6,6 +6,9 @@ namespace Tekook.BackupR.Lib.Config
     {
         public bool Compress { get; }
         public IEnumerable<string> Excludes { get; }
+        public string MaxAge { get; }
+        public string MinAge { get; }
         public string Path { get; }
+        public bool UseCreationDate { get; }
     }
 }
