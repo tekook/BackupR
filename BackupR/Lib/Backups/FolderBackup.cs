@@ -14,6 +14,8 @@ namespace Tekook.BackupR.Lib.Backups
 {
     internal class FolderBackup : Backup
     {
+        protected DateTime? MaxAge = null;
+        protected DateTime? MinAge = null;
         protected IEnumerable<Regex> Excludes { get; set; }
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IFolderBackup Settings { get; set; }
@@ -21,6 +23,8 @@ namespace Tekook.BackupR.Lib.Backups
         public FolderBackup(IFolderBackup settings)
         {
             this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.Parse(this.Settings.MaxAge, nameof(this.Settings.MaxAge), ref this.MaxAge);
+            this.Parse(this.Settings.MinAge, nameof(this.Settings.MinAge), ref this.MinAge);
             var excludes = new List<Regex>();
             foreach (string ex in this.Settings.Excludes)
             {
@@ -47,17 +51,14 @@ namespace Tekook.BackupR.Lib.Backups
                 {
                     using (archive.PauseEntryRebuilding())
                     {
-                        foreach (string path in Directory.EnumerateFiles(this.Settings.Path, "*.*", SearchOption.AllDirectories))
+                        var paths = Directory.EnumerateFiles(this.Settings.Path, "*.*", SearchOption.AllDirectories)
+                        .Select(x => new { FileInfo = new FileInfo(x), RelPath = x[this.Settings.Path.Length..] })
+                        .Where(x => this.IsFileValid(x.FileInfo, x.RelPath));
+                        foreach (var path in paths)
                         {
-                            string p = path[this.Settings.Path.Length..];
-                            string pt = p.Trim(Path.DirectorySeparatorChar);
-                            if (!this.Excludes.Any(x => x.IsMatch(pt)))
-                            {
-                                var fileInfo = new FileInfo(path);
-                                Logger.Trace("Adding file: {file}", p);
-                                archive.AddEntry(p, fileInfo.OpenRead(), true, fileInfo.Length,
-                                                fileInfo.LastWriteTime);
-                            }
+                            Logger.Trace("Adding file: {file}", path.RelPath);
+                            archive.AddEntry(path.RelPath, path.FileInfo.OpenRead(), true, path.FileInfo.Length,
+                                            path.FileInfo.LastWriteTime);
                         }
                     }
                     Logger.Trace("Saving to archive.");
@@ -73,6 +74,46 @@ namespace Tekook.BackupR.Lib.Backups
         public override string ToString()
         {
             return $"{{{this.GetType().Name}|{this.Settings.Name}: {this.Settings.Path}}}";
+        }
+
+        protected bool IsFileValid(FileInfo file, string relPath)
+        {
+            string trim = relPath[1..];
+            if (this.Excludes.Any(x => x.IsMatch(trim)))
+            {
+                Logger.Trace("File {file} is excluded by Excludes", relPath);
+                return false;
+            }
+            DateTime date = this.Settings.UseCreationDate ? file.CreationTime : file.LastWriteTime;
+            if (this.MaxAge != null && date < this.MaxAge)
+            {
+                Logger.Trace("File {file} is excluded by MaxAge.", relPath);
+                return false;
+            }
+            if (this.MinAge != null && date > this.MinAge)
+            {
+                Logger.Trace("File {file} is excluded by MinAge.", relPath);
+                return false;
+            }
+            return true;
+        }
+
+        protected void Parse(string span, string name, ref DateTime? date)
+        {
+            if (string.IsNullOrEmpty(span))
+            {
+                Logger.Debug("No value set for " + name);
+                return;
+            }
+            if (TimeSpan.TryParse(span, out TimeSpan ts))
+            {
+                date = DateTime.Now.Subtract(ts);
+                Logger.Info(name + ": {" + name + "} via {field}", date, this.Settings.UseCreationDate ? "CreationTime" : "LastWriteTime");
+            }
+            else
+            {
+                Logger.Warn(name + " could not be parsed via TimeSpan.Parse. Ignoring!");
+            }
         }
     }
 }

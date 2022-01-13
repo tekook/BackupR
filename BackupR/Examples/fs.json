@@ -15,7 +15,9 @@
         "Compress": true,
         "Excludes": [
           "asd\\bl*"
-        ]
+        ],
+        "MaxAge": "0.0:30:00",
+        "MinAge": "1.0:10:00"
       }
     ],
     "Commands": [
@@ -30,6 +32,7 @@
     ],
     "MysqlBackups": [
       {
+        "Disabled": true,
         "Name": "Mysql-Backup",
         "UploadPath": "mysql",
         "UploadName": "mysql_$date.tar.gz",
