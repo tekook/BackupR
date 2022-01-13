@@ -100,6 +100,11 @@ namespace Tekook.BackupR.Lib.Backups
 
         protected void Parse(string span, string name, ref DateTime? date)
         {
+            if (string.IsNullOrEmpty(span))
+            {
+                Logger.Debug("No value set for " + name);
+                return;
+            }
             if (TimeSpan.TryParse(span, out TimeSpan ts))
             {
                 date = DateTime.Now.Subtract(ts);
