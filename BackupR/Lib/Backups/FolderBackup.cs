@@ -56,6 +56,11 @@ namespace Tekook.BackupR.Lib.Backups
                         .Where(x => this.IsFileValid(x.FileInfo, x.RelPath));
                         foreach (var path in paths)
                         {
+                            if (!path.FileInfo.Exists)
+                            {
+                                Logger.Trace("Cannot add file: {file} because is does not exist.", path.RelPath);
+                                continue;
+                            }
                             Logger.Trace("Adding file: {file}", path.RelPath);
                             archive.AddEntry(path.RelPath, path.FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), true, path.FileInfo.Length,
                                             path.FileInfo.LastWriteTime);
