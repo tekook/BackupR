@@ -17,5 +17,7 @@ RUN dotnet publish "BackupR.csproj" -c Release -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-COPY --from=mysql:8 /usr/bin/mysqldump /usr/bin
+COPY --from=mysql:8.4.0 /usr/bin/mysqldump /usr/bin
+COPY --from=mariadb:11.4.2 /usr/bin/mariadb-dump /usr/bin
+COPY --from=mariadb:11.4.2 /usr/bin/mariadb-backup /usr/bin
 ENTRYPOINT ["dotnet", "BackupR.dll"]
