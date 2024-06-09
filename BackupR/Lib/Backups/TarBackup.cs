@@ -38,7 +38,7 @@ namespace Tekook.BackupR.Lib.Backups
             {
                 sb.Append($" {this.Settings.AdditionalOptions}");
             }
-            sb.Append($" {this.Settings.Path}");
+            sb.Append($" -C {this.Settings.Path} .");
 
             var process = new Process
             {
