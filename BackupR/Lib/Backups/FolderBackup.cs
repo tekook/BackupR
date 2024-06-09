@@ -56,18 +56,21 @@ namespace Tekook.BackupR.Lib.Backups
                         .Where(x => this.IsFileValid(x.FileInfo, x.RelPath));
                         foreach (var path in paths)
                         {
-                            if(path.FileInfo.LinkTarget != null && !Path.Exists(path.FileInfo.LinkTarget))
+                            try
                             {
-                                Logger.Trace("Cannot add symbolic link {link} because it's target ({link_target}) does not exist.", path.FileInfo.FullName, path.FileInfo.LinkTarget);
-                                continue;
-                            }
-                            if (!path.FileInfo.Exists)
+                                if (path.FileInfo.LinkTarget != null && !Path.Exists(path.FileInfo.LinkTarget))
+                                {
+                                    Logger.Trace("Cannot add symbolic link {link} because it's target ({link_target}) does not exist.", path.FileInfo.FullName, path.FileInfo.LinkTarget);
+                                    continue;
+                                }
+                                Logger.Trace("Adding file: {file}", path.FileInfo.FullName);
+                                archive.AddEntry(path.RelPath, path.FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), true, path.FileInfo.Length,
+                                                path.FileInfo.LastWriteTime);
+                            } catch(FileNotFoundException e)
                             {
-                                
+                                Logger.Error("Could not add {file} because it does not exist!", path.FileInfo.FullName);
+                                Logger.Error(e.Message, e);
                             }
-                            Logger.Trace("Adding file: {file}", path.FileInfo.FullName);
-                            archive.AddEntry(path.RelPath, path.FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), true, path.FileInfo.Length,
-                                            path.FileInfo.LastWriteTime);
                         }
                     }
                     Logger.Trace("Saving to archive.");
