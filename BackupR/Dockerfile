@@ -3,7 +3,7 @@
 FROM mcr.microsoft.com/dotnet/runtime:8.0.6-noble AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.6-noble AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.301-noble AS build
 WORKDIR /src
 COPY ["BackupR/BackupR.csproj", "BackupR/"]
 RUN dotnet restore "BackupR/BackupR.csproj"
