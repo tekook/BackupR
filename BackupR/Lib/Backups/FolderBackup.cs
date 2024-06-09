@@ -58,11 +58,6 @@ namespace Tekook.BackupR.Lib.Backups
                         {
                             try
                             {
-                                if (path.FileInfo.LinkTarget != null && !Path.Exists(path.FileInfo.LinkTarget))
-                                {
-                                    Logger.Trace("Cannot add symbolic link {link} because it's target ({link_target}) does not exist.", path.FileInfo.FullName, path.FileInfo.LinkTarget);
-                                    continue;
-                                }
                                 Logger.Trace("Adding file: {file}", path.FileInfo.FullName);
                                 archive.AddEntry(path.RelPath, path.FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), true, path.FileInfo.Length,
                                                 path.FileInfo.LastWriteTime);
@@ -96,15 +91,24 @@ namespace Tekook.BackupR.Lib.Backups
                 Logger.Trace("File {file} is excluded by Excludes", relPath);
                 return false;
             }
-            DateTime date = this.Settings.UseCreationDate ? file.CreationTime : file.LastWriteTime;
-            if (this.MaxAge != null && date < this.MaxAge)
+            if (this.MaxAge != null || this.MinAge != null)
             {
-                Logger.Trace("File {file} is excluded by MaxAge.", relPath);
-                return false;
+                DateTime date = this.Settings.UseCreationDate ? file.CreationTime : file.LastWriteTime;
+                if (this.MaxAge != null && date < this.MaxAge)
+                {
+                    Logger.Trace("File {file} is excluded by MaxAge.", relPath);
+                    return false;
+                }
+                if (this.MinAge != null && date > this.MinAge)
+                {
+                    Logger.Trace("File {file} is excluded by MinAge.", relPath);
+                    return false;
+                }
             }
-            if (this.MinAge != null && date > this.MinAge)
+
+            if (file.LinkTarget != null && !Path.Exists(file.LinkTarget))
             {
-                Logger.Trace("File {file} is excluded by MinAge.", relPath);
+                Logger.Trace("File {file} is exluded because it's link_target ({link_target}) does not exist!", relPath, file.LinkTarget);
                 return false;
             }
             return true;
