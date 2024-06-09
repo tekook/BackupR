@@ -1,9 +1,9 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/runtime:8.0.6-noble AS base
+FROM mcr.microsoft.com/dotnet/runtime:8.0.6 AS base
 WORKDIR /app
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0.301-noble AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0.301 AS build
 WORKDIR /src
 COPY ["BackupR/BackupR.csproj", "BackupR/"]
 RUN dotnet restore "BackupR/BackupR.csproj"
