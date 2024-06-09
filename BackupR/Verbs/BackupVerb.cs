@@ -36,6 +36,7 @@ namespace Tekook.BackupR.Verbs
                 await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
                 await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
                 await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
+                await this.Handle<TarBackup, ITarBackup>(backup.TarBackups);
                 Logger.Info("------- Backup finished -------");
             }
             catch (ProviderException e)

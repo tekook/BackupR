@@ -56,6 +56,19 @@
         "Routines": true,
         "Triggers": true
       }
+    ],
+    "TarBackups": [
+      {
+        "Disabled": true,
+        "Name": "TarBackup",
+        "UploadPath": "tar",
+        "UploadName": "tar_$date.tar.gz",
+        "Path": "C:\\tmp\\b\\home",
+        "Compress": true,
+        "Excludes": [
+          "/etc/etc"
+        ]
+      }
     ]
   },
   "Containers": [
