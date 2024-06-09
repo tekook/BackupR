@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
+using Tekook.BackupR.Lib.StateManagement;
 using Tekook.VerbR.Resolvers;
 
 namespace Tekook.BackupR.Verbs
@@ -26,6 +27,8 @@ namespace Tekook.BackupR.Verbs
             try
             {
                 Logger.Info("Starting cleanup");
+                StateManager.Init(this.Config.StateFile);
+                StateManager.CleanupState.Start();
                 using IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
                 Logger.Info("Validating provider: {provider}", provider.GetType().Name);
                 await provider.Validate();
@@ -75,6 +78,10 @@ namespace Tekook.BackupR.Verbs
                 Logger.Error("Unkown error caught -> {type}", e.GetType().FullName);
                 Logger.Error(e);
                 return 1;
+            }
+            finally
+            {
+                StateManager.CleanupState.Stop();
             }
             return 0;
         }

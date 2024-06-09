@@ -1,6 +1,7 @@
 ﻿{
   "Name": "ftp",
   "Type": "Tekook.BackupR.Lib.Providers.FtpProvider",
+  "StateFile": "state.json",
   "Provider": {
     "Host": "ftp.dev.local",
     "Path": "/",

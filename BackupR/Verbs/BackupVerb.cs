@@ -10,6 +10,7 @@ using Tekook.BackupR.Lib.Backups;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Exceptions;
+using Tekook.BackupR.Lib.StateManagement;
 using Tekook.VerbR.Resolvers;
 
 namespace Tekook.BackupR.Verbs
@@ -26,9 +27,11 @@ namespace Tekook.BackupR.Verbs
 
         public override async Task<int> InvokeAsync()
         {
-            Logger.Info("------- Starting backup -------");
             try
             {
+                Logger.Info("------- Starting backup -------");
+                StateManager.Init(this.Config.StateFile);
+                StateManager.BackupState.Start();
                 this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
                 Logger.Info("Validating provider: {provider}...", this.Provider.GetType().Name);
                 await this.Provider.Validate();
@@ -47,6 +50,7 @@ namespace Tekook.BackupR.Verbs
             }
             finally
             {
+                StateManager.BackupState.Stop();
                 this.Provider?.Dispose();
             }
             return 0;
