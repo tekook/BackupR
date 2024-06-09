@@ -102,7 +102,7 @@ namespace Tekook.BackupR.Lib.Backups
         {
             if (string.IsNullOrEmpty(span))
             {
-                Logger.Debug("No value set for " + name);
+                Logger.Trace("No value set for " + name);
                 return;
             }
             if (TimeSpan.TryParse(span, out TimeSpan ts))
