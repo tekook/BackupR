@@ -1,4 +1,5 @@
 ﻿using FluentFTP;
+using FluentFTP.Exceptions;
 using System;
 using System.IO;
 using System.Net;
@@ -19,7 +20,7 @@ namespace Tekook.BackupR.Lib.Providers
         /// <summary>
         /// FtpClient this provider uses.
         /// </summary>
-        protected FtpClient Client { get; set; }
+        protected AsyncFtpClient Client { get; set; }
 
         /// <summary>
         /// Configuration for this provider.
@@ -58,7 +59,7 @@ namespace Tekook.BackupR.Lib.Providers
             {
                 throw new InvalidOperationException($"Invalid {nameof(IItem)} provided. (Invalid {nameof(IProvider)})");
             }
-            await this.Client.DeleteFileAsync(item.Path);
+            await this.Client.DeleteFile(item.Path);
         }
 
         /// <inheritdoc/>
@@ -73,7 +74,7 @@ namespace Tekook.BackupR.Lib.Providers
         {
             await this.EnsureClientConnected();
             using var stream = File.OpenWrite(localPath);
-            await this.Client.DownloadAsync(stream, item.Path);
+            await this.Client.DownloadStream(stream, item.Path);
         }
 
         /// <inheritdoc/>
@@ -84,23 +85,23 @@ namespace Tekook.BackupR.Lib.Providers
                 await this.EnsureClientConnected();
                 FtpContainer root = new FtpContainer(this, path);
                 FtpContainer container;
-                if (!await this.Client.DirectoryExistsAsync(path))
+                if (!await this.Client.DirectoryExists(path))
                 {
-                    await this.Client.CreateDirectoryAsync(path);
+                    await this.Client.CreateDirectory(path);
                 }
-                foreach (FtpListItem item in await this.Client.GetListingAsync(path))
+                foreach (FtpListItem item in await this.Client.GetListing(path))
                 {
-                    if (item.Type == FtpFileSystemObjectType.File)
+                    if (item.Type == FtpObjectType.File)
                     {
                         root.Items.Add(new FtpItem(root)
                         {
-                            Date = await this.Client.GetModifiedTimeAsync(item.FullName),
+                            Date = await this.Client.GetModifiedTime(item.FullName),
                             Name = item.Name,
                             Path = item.FullName,
-                            Size = await this.Client.GetFileSizeAsync(item.FullName),
+                            Size = await this.Client.GetFileSize(item.FullName),
                         });
                     }
-                    else if (item.Type == FtpFileSystemObjectType.Directory && recursive)
+                    else if (item.Type == FtpObjectType.Directory && recursive)
                     {
                         container = (FtpContainer)await this.GetContainer(item.FullName, recursive);
                         root.Containers.Add(container);
@@ -139,7 +140,7 @@ namespace Tekook.BackupR.Lib.Providers
                     throw new InvalidOperationException("Invalid container provided. Provider does not match!");
                 }
                 using FileStream stream = file.OpenRead();
-                await this.Client.UploadAsync(stream, Path.Combine(target.Path, name ?? file.Name));
+                await this.Client.UploadStream(stream, Path.Combine(target.Path, name ?? file.Name));
             }
             catch (FtpException e)
             {
@@ -168,7 +169,7 @@ namespace Tekook.BackupR.Lib.Providers
         {
             if (this.Client == null)
             {
-                this.Client = new FtpClient(this.Config.Host)
+                this.Client = new AsyncFtpClient(this.Config.Host)
                 {
                     Port = this.Config.Port
                 };
@@ -180,7 +181,7 @@ namespace Tekook.BackupR.Lib.Providers
             }
             if (!this.Client.IsConnected)
             {
-                await this.Client.ConnectAsync();
+                await this.Client.Connect();
             }
         }
     }
