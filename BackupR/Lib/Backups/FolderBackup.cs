@@ -56,10 +56,14 @@ namespace Tekook.BackupR.Lib.Backups
                         .Where(x => this.IsFileValid(x.FileInfo, x.RelPath));
                         foreach (var path in paths)
                         {
+                            if(path.FileInfo.LinkTarget != null && !Path.Exists(path.FileInfo.LinkTarget))
+                            {
+                                Logger.Trace("Cannot add symbolic link {link} because it's target ({link_target}) does not exist.", path.FileInfo.FullName, path.FileInfo.LinkTarget);
+                                continue;
+                            }
                             if (!path.FileInfo.Exists)
                             {
-                                Logger.Trace("Cannot add file: {file} because is does not exist.", path.FileInfo.FullName);
-                                continue;
+                                
                             }
                             Logger.Trace("Adding file: {file}", path.FileInfo.FullName);
                             archive.AddEntry(path.RelPath, path.FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), true, path.FileInfo.Length,
