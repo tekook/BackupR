@@ -45,7 +45,9 @@ namespace Tekook.BackupR.Lib.Providers
         }
 
         /// <inheritdoc/>
+#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         public async Task Delete(IItem item)
+#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         {
             if (item.Container.Provider != this)
             {
@@ -120,7 +122,9 @@ namespace Tekook.BackupR.Lib.Providers
         }
 
         /// <inheritdoc/>
+#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         public async Task Upload(FileInfo file, IContainer target, string name = null)
+#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         {
             try
             {
@@ -141,7 +145,9 @@ namespace Tekook.BackupR.Lib.Providers
         }
 
         /// <inheritdoc/>
+#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         public async Task Validate()
+#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
         {
             if (!Directory.Exists(this.RootPath))
             {
