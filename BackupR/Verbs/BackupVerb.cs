@@ -36,6 +36,7 @@ namespace Tekook.BackupR.Verbs
                 Logger.Info("Validating provider: {provider}...", this.Provider.GetType().Name);
                 await this.Provider.Validate();
                 var backup = this.Config.Backup;
+                StateManager.BackupState.TotalTasks = backup.Folders.Count() + backup.Commands.Count() + backup.MysqlBackups.Count() + backup.TarBackups.Count();
                 await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
                 await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
                 await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
@@ -44,8 +45,9 @@ namespace Tekook.BackupR.Verbs
             }
             catch (ProviderException e)
             {
+                StateManager.BackupState.HasProviderError = true;
                 LogException(e);
-                Logger.Warn("------ Backup could be started! -------");
+                Logger.Warn("------ Backup could not be started! -------");
                 return 1;
             }
             finally
@@ -99,9 +101,11 @@ namespace Tekook.BackupR.Verbs
                     if (exception == null)
                     {
                         Logger.Info("------- Task: {backup_name} finished -------", setting.Name);
+                        StateManager.BackupState.SuccessfullTasks++;
                     }
                     else
                     {
+                        StateManager.BackupState.FailedTasks++;
                         Logger.Error("------- Task: {backup_name} failed with errors. Backup has not been created. -------", setting.Name);
                     }
                 }

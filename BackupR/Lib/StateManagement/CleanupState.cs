@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tekook.BackupR.Lib.StateManagement
+﻿namespace Tekook.BackupR.Lib.StateManagement
 {
-    internal class CleanupState : StateTimer
+    internal class CleanupState : CommandState
     {
+        protected override void StateStarted()
+        {
+            // nothing to do
+        }
+
+        protected override void StateStoped()
+        {
+            // nothing to do
+        }
     }
 }
