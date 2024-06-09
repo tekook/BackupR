@@ -57,7 +57,7 @@ namespace Tekook.BackupR.Lib.Backups
                         foreach (var path in paths)
                         {
                             Logger.Trace("Adding file: {file}", path.RelPath);
-                            archive.AddEntry(path.RelPath, path.FileInfo.OpenRead(), true, path.FileInfo.Length,
+                            archive.AddEntry(path.RelPath, path.FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), true, path.FileInfo.Length,
                                             path.FileInfo.LastWriteTime);
                         }
                     }
