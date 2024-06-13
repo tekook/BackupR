@@ -8,7 +8,7 @@ namespace Tekook.BackupR.Lib.StateManagement
     {
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public List<StateTask> Tasks { get; set; }
+        public List<StateTask> Tasks { get; set; } = new();
         public double TotalSize { get; set; } = 0;
         public bool HasProviderError { get; set; } = false;
         public bool HasFailedTasks { get; set; } = false;
