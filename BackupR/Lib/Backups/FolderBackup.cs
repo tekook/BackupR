@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Config;
+using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Backups
 {
@@ -44,6 +45,10 @@ namespace Tekook.BackupR.Lib.Backups
         public override async Task<FileInfo> CreateBackup()
         {
             Logger.Info("Creating archive of {path}", this.Settings.Path);
+            if (!Directory.Exists(this.Settings.Path))
+            {
+                throw new BackupException(this, $"Path \"{this.Settings.Path}\" does not exist!");
+            }
             await Task.Run(() =>
             {
                 string tempFile = Path.GetTempFileName();
@@ -61,7 +66,8 @@ namespace Tekook.BackupR.Lib.Backups
                                 Logger.Trace("Adding file: {file}", path.FileInfo.FullName);
                                 archive.AddEntry(path.RelPath, path.FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), true, path.FileInfo.Length,
                                                 path.FileInfo.LastWriteTime);
-                            } catch(FileNotFoundException e)
+                            }
+                            catch (FileNotFoundException e)
                             {
                                 Logger.Error("Could not add {file} because it does not exist!", path.FileInfo.FullName);
                                 Logger.Error(e.Message, e);
