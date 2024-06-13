@@ -16,6 +16,7 @@ namespace Tekook.BackupR.Verbs
     internal class CleanupVerb : VerbR.Verb<CleanupOptions, IConfig>
     {
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
+        protected CleanupState State { get; set; } = new();
 
         public CleanupVerb(CleanupOptions options) : base(options)
         {
@@ -28,7 +29,7 @@ namespace Tekook.BackupR.Verbs
             {
                 Logger.Info("Starting cleanup");
                 StateManager.Init(this.Config.StateFile);
-                StateManager.CleanupState.Start();
+                this.State.Start();
                 using IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
                 Logger.Info("Validating provider: {provider}", provider.GetType().Name);
                 await provider.Validate();
@@ -81,7 +82,7 @@ namespace Tekook.BackupR.Verbs
             }
             finally
             {
-                StateManager.CleanupState.Stop();
+                StateManager.Stop(this.State);
             }
             return 0;
         }

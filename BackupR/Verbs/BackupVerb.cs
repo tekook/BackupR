@@ -19,6 +19,7 @@ namespace Tekook.BackupR.Verbs
     {
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IProvider Provider { get; set; }
+        protected BackupState State { get; set; } = new();
 
         public BackupVerb(BackupOptions options) : base(options)
         {
@@ -31,12 +32,11 @@ namespace Tekook.BackupR.Verbs
             {
                 Logger.Info("------- Starting backup -------");
                 StateManager.Init(this.Config.StateFile);
-                StateManager.BackupState.Start();
+                this.State.Start();
                 this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
                 Logger.Info("Validating provider: {provider}...", this.Provider.GetType().Name);
                 await this.Provider.Validate();
                 var backup = this.Config.Backup;
-                StateManager.BackupState.TotalTasks = backup.Folders.Count() + backup.Commands.Count() + backup.MysqlBackups.Count() + backup.TarBackups.Count();
                 await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
                 await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
                 await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
@@ -45,14 +45,14 @@ namespace Tekook.BackupR.Verbs
             }
             catch (ProviderException e)
             {
-                StateManager.BackupState.HasProviderError = true;
+                this.State.HasProviderError = true;
                 LogException(e);
                 Logger.Warn("------ Backup could not be started! -------");
                 return 1;
             }
             finally
             {
-                StateManager.BackupState.Stop();
+                StateManager.Stop(this.State);
                 this.Provider?.Dispose();
             }
             return 0;
@@ -96,16 +96,17 @@ namespace Tekook.BackupR.Verbs
                 }
                 finally
                 {
+                    double? size = task?.BackupFile.Length;
                     task?.RemoveBackup();
                     task?.CleanupTask();
                     if (exception == null)
                     {
                         Logger.Info("------- Task: {backup_name} finished -------", setting.Name);
-                        StateManager.BackupState.SuccessfullTasks++;
+                        this.State.AddTask(setting.Name, true, size ?? 0);
                     }
                     else
                     {
-                        StateManager.BackupState.FailedTasks++;
+                        this.State.AddTask(setting.Name, false, size ?? 0);
                         Logger.Error("------- Task: {backup_name} failed with errors. Backup has not been created. -------", setting.Name);
                     }
                 }

@@ -8,13 +8,13 @@ namespace Tekook.BackupR.Lib.StateManagement
     internal class StateManager
     {
         public static StateManager Instance { get; private set; }
-        public static State CurrentState => Instance?.State;
-        public static BackupState BackupState => CurrentState?.BackupState;
-        public static CleanupState CleanupState => CurrentState?.CleanupState;
+        public static State State => Instance?.CurrentState;
+        public static BackupState BackupState => State?.BackupState;
+        public static CleanupState CleanupState => State?.CleanupState;
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
 
         protected FileInfo StateFile { get; }
-        protected State State { get; private set; }
+        protected State CurrentState { get; private set; }
 
         public static void Init(FileInfo stateFile)
         {
@@ -33,6 +33,18 @@ namespace Tekook.BackupR.Lib.StateManagement
             }
         }
 
+        public static void Stop(BackupState state)
+        {
+            state.Stop();
+            State.BackupState = state;
+        }
+
+        public static void Stop(CleanupState state)
+        {
+            state.Stop();
+            State.CleanupState = state;
+        }
+
         private StateManager(FileInfo stateFile)
         {
             StateFile = stateFile;
@@ -46,7 +58,7 @@ namespace Tekook.BackupR.Lib.StateManagement
                 try
                 {
                     string json = File.ReadAllText(this.StateFile.FullName);
-                    this.State = JsonConvert.DeserializeObject<State>(json);
+                    this.CurrentState = JsonConvert.DeserializeObject<State>(json);
                 }
                 catch (Exception ex)
                 {
@@ -54,8 +66,8 @@ namespace Tekook.BackupR.Lib.StateManagement
                     Logger.Trace(ex);
                 }
             }
-            this.State ??= new State();
-            this.State.SetAppVersion();
+            this.CurrentState ??= new State();
+            this.CurrentState.SetAppVersion();
         }
 
         public static void Save()
@@ -76,7 +88,7 @@ namespace Tekook.BackupR.Lib.StateManagement
             try
             {
                 Logger.Trace("Converting state to json");
-                var json = JsonConvert.SerializeObject(this.State);
+                var json = JsonConvert.SerializeObject(this.CurrentState);
                 Logger.Trace("Writing state to {state_file}", this.StateFile);
                 File.WriteAllText(this.StateFile.FullName, json);
             }
