@@ -42,6 +42,7 @@ namespace Tekook.BackupR.Lib.StateManagement
             this.FailedTasks = this.Tasks.Count(x => !x.Success);
             this.HasFailedTasks = this.Tasks.Any(x => !x.Success);
             this.Success = !this.HasFailedTasks && !this.HasProviderError;
+            this.TotalSize = this.Tasks.Where(x => x.Size > 0).Sum(x => x.Size);
         }
     }
 }

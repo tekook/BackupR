@@ -19,7 +19,19 @@
         ],
         "MaxAge": "0.0:30:00",
         "MinAge": "1.0:10:00"
+      },
+      {
+        "Disabled": false,
+        "Name": "Full-Backup",
+        "UploadName": "full_$date.tar.gz",
+        "UploadPath": "full",
+        "Path": "C:\\tmp\\b\\home",
+        "Compress": true,
+        "Excludes": [
+          "asd\\bl*"
+        ]
       }
+
     ],
     "Commands": [
       {
@@ -60,7 +72,7 @@
     ],
     "TarBackups": [
       {
-        "Disabled": true,
+        "Disabled": false,
         "Name": "TarBackup",
         "UploadPath": "tar",
         "UploadName": "tar_$date.tar.gz",
@@ -79,9 +91,19 @@
       "MaxFiles": 10
     },
     {
-      "Path": "etc2",
+      "Path": "home",
       "MaxSize": "1GB",
       "MaxFiles": null
+    },
+    {
+      "Path": "tar",
+      "MaxSize": "1GB",
+      "MaxFiles": 3
+    },
+    {
+      "Path": "full",
+      "MaxSize": "1GB",
+      "MaxFiles": 1
     }
   ]
 }
