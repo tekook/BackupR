@@ -29,6 +29,12 @@ namespace Tekook.BackupR.Lib.StateManagement
             return task;
         }
 
+        public T AddTask<T>(T task) where T : StateTask
+        {
+            this.Tasks.Add(task);
+            return task;
+        }
+
         public virtual void Start()
         {
             this.StartTime = DateTime.Now;

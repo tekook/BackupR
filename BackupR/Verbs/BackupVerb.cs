@@ -99,14 +99,20 @@ namespace Tekook.BackupR.Verbs
                     double? size = task?.BackupFile?.Length;
                     task?.RemoveBackup();
                     task?.CleanupTask();
+                    var sTask = this.State.AddTask(new BackupTask()
+                    {
+                        Name = setting.Name,
+                        Size = size ?? -1,
+                        Type = typeof(T).Name
+                    });
                     if (exception == null)
                     {
                         Logger.Info("------- Task: {backup_name} finished -------", setting.Name);
-                        this.State.AddTask(setting.Name, true, size ?? -1);
+                        sTask.Success = true;
                     }
                     else
                     {
-                        this.State.AddTask(setting.Name, false, size ?? -1);
+                        sTask.Success = false;
                         Logger.Error("------- Task: {backup_name} failed with errors. Backup has not been created. -------", setting.Name);
                     }
                 }
