@@ -88,7 +88,7 @@ namespace Tekook.BackupR.Lib.StateManagement
             try
             {
                 Logger.Trace("Converting state to json");
-                var json = JsonConvert.SerializeObject(this.CurrentState);
+                var json = JsonConvert.SerializeObject(this.CurrentState, Formatting.Indented);
                 Logger.Trace("Writing state to {state_file}", this.StateFile);
                 File.WriteAllText(this.StateFile.FullName, json);
             }
