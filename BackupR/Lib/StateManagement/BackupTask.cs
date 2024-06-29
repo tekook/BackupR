@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Tekook.BackupR.Lib.StateManagement
+﻿namespace Tekook.BackupR.Lib.StateManagement
 {
     internal class BackupTask : StateTask
     {
+        /// <summary>
+        /// Type of the backup.
+        /// </summary>
         public string Type { get; set; }
     }
 }

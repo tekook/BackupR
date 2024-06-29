@@ -6,15 +6,55 @@ namespace Tekook.BackupR.Lib.StateManagement
 {
     internal abstract class CommandState<T> where T : StateTask, new()
     {
+        /// <summary>
+        /// Starttime of this state.
+        /// </summary>
         public DateTime StartTime { get; set; }
+
+        /// <summary>
+        /// Endtime of this state.
+        /// </summary>
         public DateTime EndTime { get; set; }
+
+        /// <summary>
+        /// List of tasks this state has handeled.
+        /// </summary>
         public List<T> Tasks { get; set; } = [];
+
+        /// <summary>
+        /// Total size of this state.
+        /// (Sum of all <see cref="Tasks"/>:<see cref="StateTask.Size"/>)
+        /// </summary>
         public double TotalSize { get; set; } = 0;
+
+        /// <summary>
+        /// Determinates if an <see cref="Exceptions.ProviderException">Provider error has occured</see>.
+        /// /// </summary>
         public bool HasProviderError { get; set; } = false;
+
+        /// <summary>
+        /// Determinates if <see cref="FailedTasks"/> is > 0.
+        /// </summary>
         public bool HasFailedTasks { get; set; } = false;
+
+        /// <summary>
+        /// Count of <see cref="Tasks"/>.
+        /// </summary>
         public int TotalTasks { get; set; } = 0;
+
+        /// <summary>
+        /// Count of <see cref="Tasks"/> which have <see cref="StateTask.Success"/>==false.
+        /// </summary>
         public int FailedTasks { get; set; } = 0;
+
+        /// <summary>
+        /// Count of successfully finished <see cref="Tasks"/>.
+        /// </summary>
         public int SuccessfullTasks { get; set; } = 0;
+
+        /// <summary>
+        /// Determinates if any failed tasks are present.
+        /// </summary>
         public bool Success { get; set; } = false;
 
         /// <summary>
