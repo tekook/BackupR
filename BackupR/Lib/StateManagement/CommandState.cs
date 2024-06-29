@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace Tekook.BackupR.Lib.StateManagement
 {
-    internal abstract class CommandState<T> where T : StateTask
+    internal abstract class CommandState<T> where T : StateTask, new()
     {
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
@@ -17,17 +17,48 @@ namespace Tekook.BackupR.Lib.StateManagement
         public int SuccessfullTasks { get; set; } = 0;
         public bool Success { get; set; } = false;
 
+        /// <summary>
+        /// Adds a tasks to the collection.
+        /// </summary>
+        /// <param name="task">The Task to add.</param>
+        /// <returns>The added task.</returns>
         public T AddTask(T task)
         {
             this.Tasks.Add(task);
             return task;
         }
 
+        /// <summary>
+        /// Creates a new Task with the given parameters and adds it to the collection.
+        /// </summary>
+        /// <param name="name"><see cref="StateTask.Name"/></param>
+        /// <param name="success"><see cref="StateTask.Success"/></param>
+        /// <param name="size"><see cref="StateTask.Size"/></param>
+        /// <returns>The added task.</returns>
+        public T AddTask(string name, bool success = false, double size = -1)
+        {
+            T task = new()
+            {
+                Name = name,
+                Success = success,
+                Size = size
+            };
+            this.Tasks.Add(task);
+            return task;
+        }
+
+        /// <summary>
+        /// Starts the state and updates <see cref="StartTime"/>.
+        /// </summary>
         public virtual void Start()
         {
             this.StartTime = DateTime.Now;
         }
 
+        /// <summary>
+        /// Stops the state updating <see cref="EndTime"/> and calculates counters.
+        /// <see cref="Success"/> will be updated if <see cref="HasFailedTasks"/> is > 0.
+        /// </summary>
         public virtual void Stop()
         {
             this.EndTime = DateTime.Now;
