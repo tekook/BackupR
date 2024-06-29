@@ -124,11 +124,11 @@ namespace Tekook.BackupR.Verbs
                     await item.Delete();
                 }
                 Logger.Info("Remaining files: {count}", files.Count);
-                if (task != null)
-                {
-                    task.MaxFilesDeletedFiles = toDelete.Count;
-                    task.MaxFilesDeletedFilesSize = toDelete.Sum(x => x.Size);
-                }
+            }
+            if (task != null)
+            {
+                task.MaxFilesDeletedFiles = toDelete.Count;
+                task.MaxFilesDeletedFilesSize = toDelete.Sum(x => x.Size);
             }
         }
 
@@ -158,6 +158,11 @@ namespace Tekook.BackupR.Verbs
                 }
                 containerSize = ByteSize.FromBytes(files.Sum(x => x.Size));
                 Logger.Info("Remaining size: {size}", containerSize);
+            }
+            else if (task != null)
+            {
+                task.MaxSizeDeletedFiles = 0;
+                task.MaxSizeDeletedFilesSize = 0;
             }
         }
     }
