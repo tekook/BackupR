@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Tekook.BackupR.Lib.StateManagement
 {
-    internal abstract class CommandState
+    internal abstract class CommandState<T> where T : StateTask
     {
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public List<StateTask> Tasks { get; set; } = new();
+        public List<T> Tasks { get; set; } = [];
         public double TotalSize { get; set; } = 0;
         public bool HasProviderError { get; set; } = false;
         public bool HasFailedTasks { get; set; } = false;
@@ -17,19 +17,7 @@ namespace Tekook.BackupR.Lib.StateManagement
         public int SuccessfullTasks { get; set; } = 0;
         public bool Success { get; set; } = false;
 
-        public StateTask AddTask(string name, bool success = false, double size = 0)
-        {
-            StateTask task = new()
-            {
-                Name = name,
-                Success = success,
-                Size = size
-            };
-            this.Tasks.Add(task);
-            return task;
-        }
-
-        public T AddTask<T>(T task) where T : StateTask
+        public T AddTask(T task)
         {
             this.Tasks.Add(task);
             return task;

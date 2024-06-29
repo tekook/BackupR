@@ -1,6 +1,6 @@
 ﻿namespace Tekook.BackupR.Lib.StateManagement
 {
-    internal class CleanupState : CommandState
+    internal class CleanupState : CommandState<CleanupTask>
     {
     }
 }
