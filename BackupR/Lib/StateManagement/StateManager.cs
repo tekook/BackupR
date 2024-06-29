@@ -7,20 +7,51 @@ namespace Tekook.BackupR.Lib.StateManagement
 {
     internal class StateManager
     {
+        /// <summary>
+        /// Singleton instance of the <see cref="StateManager"/>.
+        /// </summary>
         public static StateManager Instance { get; private set; }
+
+        /// <summary>
+        /// Current State of <see cref="Instance"/>.
+        /// </summary>
         public static State State => Instance?.CurrentState;
+
+        /// <summary>
+        /// Current BackupState.
+        /// </summary>
         public static BackupState BackupState => State?.BackupState;
+
+        /// <summary>
+        /// Current CleanupState.
+        /// </summary>
         public static CleanupState CleanupState => State?.CleanupState;
+
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// The file to read or write the state to.
+        /// </summary>
         protected FileInfo StateFile { get; }
+
+        /// <summary>
+        /// The current runtime state.
+        /// </summary>
         protected State CurrentState { get; private set; }
 
+        /// <summary>
+        /// Initilized the <see cref="StateManager.Instance"/> if it is not yet initilized.
+        /// </summary>
+        /// <param name="stateFile"></param>
         public static void Init(FileInfo stateFile)
         {
             Instance ??= new StateManager(stateFile);
         }
 
+        /// <summary>
+        /// Initilized the <see cref="StateManager.Instance"/> if it is not yet initilized.
+        /// </summary>
+        /// <param name="stateFile"></param>
         public static void Init(string stateFile)
         {
             if (stateFile != null)
@@ -33,24 +64,39 @@ namespace Tekook.BackupR.Lib.StateManagement
             }
         }
 
+        /// <summary>
+        /// Stops the given state and saves it as <see cref="BackupState"/>.
+        /// </summary>
+        /// <param name="state"></param>
         public static void Stop(BackupState state)
         {
             state.Stop();
             State.BackupState = state;
         }
 
+        /// <summary>
+        /// Stops the given state and saves it as <see cref="CleanupState"/>.
+        /// </summary>
+        /// <param name="state"></param>
         public static void Stop(CleanupState state)
         {
             state.Stop();
             State.CleanupState = state;
         }
 
+        /// <summary>
+        /// Creates a new instance of the StateManager.
+        /// </summary>
+        /// <param name="stateFile"></param>
         private StateManager(FileInfo stateFile)
         {
             StateFile = stateFile;
             this.LoadState();
         }
 
+        /// <summary>
+        /// Load state from file if it exists and is not null.
+        /// </summary>
         protected void LoadState()
         {
             if (this.StateFile?.Exists == true)
@@ -70,6 +116,10 @@ namespace Tekook.BackupR.Lib.StateManagement
             this.CurrentState.SetAppVersion();
         }
 
+        /// <summary>
+        /// Saves the State to file.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if the <see cref="StateManager"/> is not yet initilized.</exception>
         public static void Save()
         {
             if (Instance == null)
@@ -79,6 +129,10 @@ namespace Tekook.BackupR.Lib.StateManagement
             Instance.SaveStateToFile();
         }
 
+        /// <summary>
+        /// Save the state to json if <see cref="StateFile"/> is set.
+        /// Catches all exceptions silently and logs them to <see cref="Logger"/> to not interfere with backup.
+        /// </summary>
         protected void SaveStateToFile()
         {
             if (this.StateFile == null)
