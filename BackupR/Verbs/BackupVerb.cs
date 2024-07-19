@@ -10,6 +10,7 @@ using Tekook.BackupR.Lib.Backups;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Exceptions;
+using Tekook.BackupR.Lib.ProviderExtensions;
 using Tekook.BackupR.Lib.StateManagement;
 using Tekook.VerbR.Resolvers;
 
@@ -35,7 +36,7 @@ namespace Tekook.BackupR.Verbs
                 this.State.Start();
                 this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
                 Logger.Info("Validating provider: {provider}...", this.Provider.GetType().Name);
-                await this.Provider.Validate();
+                await this.Provider.Validate(3, Logger);
                 var backup = this.Config.Backup;
                 await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
                 await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);

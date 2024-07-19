@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
+using Tekook.BackupR.Lib.ProviderExtensions;
 using Tekook.BackupR.Lib.StateManagement;
 using Tekook.VerbR.Resolvers;
 
@@ -32,7 +33,7 @@ namespace Tekook.BackupR.Verbs
                 this.State.Start();
                 using IProvider provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
                 Logger.Info("Validating provider: {provider}", provider.GetType().Name);
-                await provider.Validate();
+                await provider.Validate(3, Logger);
                 IContainer root = await provider.GetRoot();
 
                 foreach (IContainerConfig configContainer in this.Config.Containers)
