@@ -15,7 +15,7 @@ namespace Tekook.BackupR.Lib
         /// <summary>
         /// List of direct child containers of this container.
         /// </summary>
-        public List<TContainer> Containers { get; set; } = new List<TContainer>();
+        public List<TContainer> Containers { get; set; } = [];
 
         /// <inheritdoc/>
         IEnumerable<IItem> IContainer.Items => (IEnumerable<IItem>)this.Items;
@@ -23,7 +23,7 @@ namespace Tekook.BackupR.Lib
         /// <summary>
         /// Directy child items this container has.
         /// </summary>
-        public List<TItem> Items { get; set; } = new List<TItem>();
+        public List<TItem> Items { get; set; } = [];
 
         /// <inheritdoc/>
         public string Name { get; }

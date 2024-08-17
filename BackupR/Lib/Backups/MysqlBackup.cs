@@ -45,7 +45,7 @@ namespace Tekook.BackupR.Lib.Backups
             {
                 dbs.Add(null);
             }
-            List<FileInfo> files = new();
+            List<FileInfo> files = [];
             Logger.Info("Databases to backup: {database_count}", dbs.Count);
             string name, dump;
             foreach (string db in dbs)
@@ -77,7 +77,7 @@ namespace Tekook.BackupR.Lib.Backups
 
         public override string ToString()
         {
-            List<string> config = new();
+            List<string> config = [];
             if (this.Settings.FetchDatabases)
             {
                 config.Add("fetch-databases");
@@ -109,13 +109,15 @@ namespace Tekook.BackupR.Lib.Backups
             try
             {
                 Logger.Debug("Connecting to {host} to fetch available databases.", this.Settings.Host);
-                var x = new MySqlConnectionStringBuilder();
-                x.UserID = this.Settings.Username;
-                x.Password = this.Settings.Password;
-                x.Server = this.Settings.Host;
-                x.Port = (uint)this.Settings.Port;
-                List<string> dbs = new();
-                using (var connection = new MySqlConnection(x.ToString()))
+                var cs = new MySqlConnectionStringBuilder
+                {
+                    UserID = this.Settings.Username,
+                    Password = this.Settings.Password,
+                    Server = this.Settings.Host,
+                    Port = (uint)this.Settings.Port
+                };
+                List<string> dbs = [];
+                using (var connection = new MySqlConnection(cs.ToString()))
                 {
                     await connection.OpenAsync();
                     using var command = new MySqlCommand("show databases;", connection);
@@ -141,7 +143,7 @@ namespace Tekook.BackupR.Lib.Backups
 
         private string GetArguments(string file, string db = null, bool showPassword = false)
         {
-            List<string> args = new();
+            List<string> args = [];
             if (this.Settings.AddLocks)
             {
                 args.Add("--add-locks");
