@@ -82,11 +82,11 @@ namespace Tekook.BackupR.Lib.Backups
             {
                 config.Add("fetch-databases");
             }
-            if (this.Settings.Databases.Count() > 0 && !this.Settings.FetchDatabases)
+            if (this.Settings.Databases.Any() && !this.Settings.FetchDatabases)
             {
                 config.Add($"databases: [{string.Join(", ", this.Settings.Databases)}]");
             }
-            if (this.Settings.Excludes.Count() > 0)
+            if (this.Settings.Excludes.Any())
             {
                 config.Add($"excludes: [{string.Join(", ", this.Settings.Excludes)}]");
             }

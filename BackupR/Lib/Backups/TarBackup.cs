@@ -57,7 +57,7 @@ namespace Tekook.BackupR.Lib.Backups
             await process.WaitForExitAsync();
             if (process.ExitCode != 0)
             {
-                Logger.Error("Tar command did run succesfully - see log for details");
+                Logger.Error("Tar command did run unsuccesfully - see log for details");
                 var stdout = await process.StandardOutput.ReadToEndAsync();
                 var stderr = await process.StandardError.ReadToEndAsync();
                 Logger.Debug("stdout: {stdout}", stdout);
