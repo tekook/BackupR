@@ -2,23 +2,17 @@
 
 namespace Tekook.BackupR.Lib.Config
 {
-    public interface IMysqlBackup : IBackup
+    public interface IMysqlBackup : IBackup, IMysqlBackupOptions
     {
-        public bool AddLocks { get; }
-        public bool ColumnStatistics { get; }
-        public IEnumerable<string> Databases { get; }
-        public bool Events { get; }
-        public IEnumerable<string> Excludes { get; }
         public bool FetchDatabases { get; }
-        public bool FlushPrivileges { get; }
+        public bool PasswordViaEnvironment { get; }
+        public IEnumerable<IMysqlBackupOptions> Options { get; }
+        public IEnumerable<string> Databases { get; }
+        public IEnumerable<string> Excludes { get; }
+        public int Port { get; }
         public string Host { get; }
         public string MysqlDumpPath { get; }
         public string Password { get; }
-        public bool PasswordViaEnvironment { get; }
-        public bool Routines { get; }
-        public bool Triggers { get; }
         public string Username { get; }
-        public int Port { get; }
-        public bool SkipLockTables { get; }
     }
 }

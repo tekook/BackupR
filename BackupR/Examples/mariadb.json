@@ -27,10 +27,16 @@
         ],
         "AddLocks": true,
         "Events": true,
-        "SkipLockTables":  true,
+        "SkipLockTables": false,
         "FlushPrivileges": true,
         "Routines": true,
-        "Triggers": true
+        "Triggers": true,
+        "Options": [
+          {
+            "Database": "mysql",
+            "SkipLockTables": true
+          }
+        ]
       }
     ],
     "TarBackups": []

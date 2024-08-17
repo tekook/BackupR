@@ -143,34 +143,48 @@ namespace Tekook.BackupR.Lib.Backups
 
         private string GetArguments(string file, string db = null, bool showPassword = false)
         {
+            IMysqlBackupOptions options = db != null ? this.Settings.Options?.Where(x => x.Database == db).FirstOrDefault() : null;
             List<string> args = [];
-            if (this.Settings.AddLocks)
+            if (this.Settings.AddLocks || options?.AddLocks == true)
             {
                 args.Add("--add-locks");
             }
-            if (this.Settings.SkipLockTables || db == "mysql")
-            { // database "mysql" should always be locked
-                args.Add("--skip-lock-tables");
-            }
-            if (this.Settings.Port != 0)
+            if (this.Settings.ColumnStatistics || options?.ColumnStatistics == true)
             {
-                args.Add($"--port={this.Settings.Port}");
+                args.Add("--column-statistics");
             }
-            if (this.Settings.Events)
+            else
+            {
+                args.Add("--column-statistics=0");
+            }
+            if (this.Settings.Events || options?.Events == true)
             {
                 args.Add("--events");
             }
-            if (this.Settings.Routines)
+            if (this.Settings.FlushPrivileges || options?.FlushPrivileges == true)
+            {
+                args.Add("--flush-privileges");
+            }
+            if (this.Settings.Routines || options?.Routines == true)
             {
                 args.Add("--routines");
             }
-            if (this.Settings.Triggers)
+            if (this.Settings.SkipLockTables || options?.SkipLockTables == true)
+            {
+                args.Add("--skip-lock-tables");
+            }
+            if (this.Settings.Triggers || options?.Triggers == true)
             {
                 args.Add("--triggers");
             }
-            if (this.Settings.FlushPrivileges)
+
+
+
+
+            // Global Settings
+            if (this.Settings.Port != 0)
             {
-                args.Add("--flush-privileges");
+                args.Add($"--port={this.Settings.Port}");
             }
             if (!this.Settings.PasswordViaEnvironment && !string.IsNullOrEmpty(this.Settings.Password))
             {
@@ -184,14 +198,6 @@ namespace Tekook.BackupR.Lib.Backups
             if (!string.IsNullOrEmpty(this.Settings.Host))
             {
                 args.Add($"--host={this.Settings.Host}");
-            }
-            if (this.Settings.ColumnStatistics)
-            {
-                args.Add("--column-statistics");
-            }
-            else
-            {
-                args.Add("--column-statistics=0");
             }
             if (string.IsNullOrEmpty(db))
             {
