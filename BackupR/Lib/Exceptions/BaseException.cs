@@ -15,9 +15,5 @@ namespace Tekook.BackupR.Lib.Exceptions
         public BaseException(string message, System.Exception innerException) : base(message, innerException)
         {
         }
-
-        protected BaseException(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
-        }
     }
 }

@@ -66,6 +66,13 @@ namespace Tekook.BackupR.Lib.Providers
             GC.SuppressFinalize(this);
         }
 
+        public async Task Download(IItem item, string localPath)
+        {
+            await this.EnsureClientConnected();
+            using var stream = File.OpenWrite(localPath);
+            await Task.Run(() => { this.Client.DownloadFile(item.Path, stream); });
+        }
+
         /// <inheritdoc/>
         public async Task<IContainer> GetContainer(string path, bool recursive = false)
         {

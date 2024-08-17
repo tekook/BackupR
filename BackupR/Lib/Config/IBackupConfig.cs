@@ -7,5 +7,6 @@ namespace Tekook.BackupR.Lib.Config
         IEnumerable<ICommandBackup> Commands { get; }
         IEnumerable<IFolderBackup> Folders { get; }
         IEnumerable<IMysqlBackup> MysqlBackups { get; }
+        IEnumerable<ITarBackup> TarBackups { get; }
     }
 }

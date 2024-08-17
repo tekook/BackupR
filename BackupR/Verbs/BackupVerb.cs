@@ -10,6 +10,8 @@ using Tekook.BackupR.Lib.Backups;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Exceptions;
+using Tekook.BackupR.Lib.ProviderExtensions;
+using Tekook.BackupR.Lib.StateManagement;
 using Tekook.VerbR.Resolvers;
 
 namespace Tekook.BackupR.Verbs
@@ -18,6 +20,7 @@ namespace Tekook.BackupR.Verbs
     {
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IProvider Provider { get; set; }
+        protected BackupState State { get; set; } = new();
 
         public BackupVerb(BackupOptions options) : base(options)
         {
@@ -26,26 +29,31 @@ namespace Tekook.BackupR.Verbs
 
         public override async Task<int> InvokeAsync()
         {
-            Logger.Info("------- Starting backup -------");
             try
             {
+                Logger.Info("------- Starting backup -------");
+                StateManager.Init(this.Config.StateFile);
+                this.State.Start();
                 this.Provider = Lib.Resolver.ResolveProvider(this.Config, this.Options);
                 Logger.Info("Validating provider: {provider}...", this.Provider.GetType().Name);
-                await this.Provider.Validate();
+                await this.Provider.Validate(3, Logger);
                 var backup = this.Config.Backup;
                 await this.Handle<FolderBackup, IFolderBackup>(backup.Folders);
                 await this.Handle<CommandBackup, ICommandBackup>(backup.Commands);
                 await this.Handle<MysqlBackup, IMysqlBackup>(backup.MysqlBackups);
+                await this.Handle<TarBackup, ITarBackup>(backup.TarBackups);
                 Logger.Info("------- Backup finished -------");
             }
             catch (ProviderException e)
             {
+                this.State.HasProviderError = true;
                 LogException(e);
-                Logger.Warn("------ Backup could be started! -------");
+                Logger.Warn("------ Backup could not be started! -------");
                 return 1;
             }
             finally
             {
+                StateManager.Stop(this.State);
                 this.Provider?.Dispose();
             }
             return 0;
@@ -89,14 +97,23 @@ namespace Tekook.BackupR.Verbs
                 }
                 finally
                 {
+                    double? size = task?.BackupFile?.Length;
                     task?.RemoveBackup();
                     task?.CleanupTask();
+                    var sTask = this.State.AddTask(new BackupTask()
+                    {
+                        Name = setting.Name,
+                        Size = size ?? -1,
+                        Type = typeof(T).Name
+                    });
                     if (exception == null)
                     {
                         Logger.Info("------- Task: {backup_name} finished -------", setting.Name);
+                        sTask.Success = true;
                     }
                     else
                     {
+                        sTask.Success = false;
                         Logger.Error("------- Task: {backup_name} failed with errors. Backup has not been created. -------", setting.Name);
                     }
                 }

@@ -35,6 +35,14 @@ namespace Tekook.BackupR.Lib.Contracts
         Task Delete(IItem item);
 
         /// <summary>
+        /// Downloads an <see cref="IItem"/> from the <see cref="IProgress{T}"/> to the local path.
+        /// </summary>
+        /// <param name="item">The Item to download</param>
+        /// <param name="localPath">The local path to download the item to. (Will be overwritten!!)</param>
+        /// <returns></returns>
+        Task Download(IItem item, string localPath);
+
+        /// <summary>
         /// Reads a specific con tainer of thie provider.
         /// </summary>
         /// <param name="path"></param>

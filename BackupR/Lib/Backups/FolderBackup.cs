@@ -9,11 +9,14 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Config;
+using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Backups
 {
     internal class FolderBackup : Backup
     {
+        protected DateTime? MaxAge = null;
+        protected DateTime? MinAge = null;
         protected IEnumerable<Regex> Excludes { get; set; }
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
         protected IFolderBackup Settings { get; set; }
@@ -21,6 +24,8 @@ namespace Tekook.BackupR.Lib.Backups
         public FolderBackup(IFolderBackup settings)
         {
             this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this.Parse(this.Settings.MaxAge, nameof(this.Settings.MaxAge), ref this.MaxAge);
+            this.Parse(this.Settings.MinAge, nameof(this.Settings.MinAge), ref this.MinAge);
             var excludes = new List<Regex>();
             foreach (string ex in this.Settings.Excludes)
             {
@@ -40,6 +45,10 @@ namespace Tekook.BackupR.Lib.Backups
         public override async Task<FileInfo> CreateBackup()
         {
             Logger.Info("Creating archive of {path}", this.Settings.Path);
+            if (!Directory.Exists(this.Settings.Path))
+            {
+                throw new BackupException(this, $"Path \"{this.Settings.Path}\" does not exist!");
+            }
             await Task.Run(() =>
             {
                 string tempFile = Path.GetTempFileName();
@@ -47,16 +56,21 @@ namespace Tekook.BackupR.Lib.Backups
                 {
                     using (archive.PauseEntryRebuilding())
                     {
-                        foreach (string path in Directory.EnumerateFiles(this.Settings.Path, "*.*", SearchOption.AllDirectories))
+                        var paths = Directory.EnumerateFiles(this.Settings.Path, "*.*", SearchOption.AllDirectories)
+                        .Select(x => new { FileInfo = new FileInfo(x), RelPath = x[this.Settings.Path.Length..] })
+                        .Where(x => this.IsFileValid(x.FileInfo, x.RelPath));
+                        foreach (var path in paths)
                         {
-                            string p = path[this.Settings.Path.Length..];
-                            string pt = p.Trim(Path.DirectorySeparatorChar);
-                            if (!this.Excludes.Any(x => x.IsMatch(pt)))
+                            try
                             {
-                                var fileInfo = new FileInfo(path);
-                                Logger.Trace("Adding file: {file}", p);
-                                archive.AddEntry(p, fileInfo.OpenRead(), true, fileInfo.Length,
-                                                fileInfo.LastWriteTime);
+                                Logger.Trace("Adding file: {file}", path.FileInfo.FullName);
+                                archive.AddEntry(path.RelPath, path.FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.ReadWrite), true, path.FileInfo.Length,
+                                                path.FileInfo.LastWriteTime);
+                            }
+                            catch (FileNotFoundException e)
+                            {
+                                Logger.Error("Could not add {file} because it does not exist!", path.FileInfo.FullName);
+                                Logger.Error(e.Message, e);
                             }
                         }
                     }
@@ -73,6 +87,55 @@ namespace Tekook.BackupR.Lib.Backups
         public override string ToString()
         {
             return $"{{{this.GetType().Name}|{this.Settings.Name}: {this.Settings.Path}}}";
+        }
+
+        protected bool IsFileValid(FileInfo file, string relPath)
+        {
+            string trim = relPath[1..];
+            if (this.Excludes.Any(x => x.IsMatch(trim)))
+            {
+                Logger.Trace("File {file} is excluded by Excludes", relPath);
+                return false;
+            }
+            if (this.MaxAge != null || this.MinAge != null)
+            {
+                DateTime date = this.Settings.UseCreationDate ? file.CreationTime : file.LastWriteTime;
+                if (this.MaxAge != null && date < this.MaxAge)
+                {
+                    Logger.Trace("File {file} is excluded by MaxAge.", relPath);
+                    return false;
+                }
+                if (this.MinAge != null && date > this.MinAge)
+                {
+                    Logger.Trace("File {file} is excluded by MinAge.", relPath);
+                    return false;
+                }
+            }
+
+            if (file.LinkTarget != null && !Path.Exists(file.LinkTarget))
+            {
+                Logger.Trace("File {file} is exluded because it's link_target ({link_target}) does not exist!", relPath, file.LinkTarget);
+                return false;
+            }
+            return true;
+        }
+
+        protected void Parse(string span, string name, ref DateTime? date)
+        {
+            if (string.IsNullOrEmpty(span))
+            {
+                Logger.Trace("No value set for " + name);
+                return;
+            }
+            if (TimeSpan.TryParse(span, out TimeSpan ts))
+            {
+                date = DateTime.Now.Subtract(ts);
+                Logger.Info(name + ": {" + name + "} via {field}", date, this.Settings.UseCreationDate ? "CreationTime" : "LastWriteTime");
+            }
+            else
+            {
+                Logger.Warn(name + " could not be parsed via TimeSpan.Parse. Ignoring!");
+            }
         }
     }
 }

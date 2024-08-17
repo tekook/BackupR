@@ -2,7 +2,7 @@
   "profiles": {
     "BackupR": {
       "commandName": "Project",
-      "commandLineArgs": "cleanup --config=./Examples/ftp.json"
+      "commandLineArgs": "cleanup --config=./Examples/fs.json"
     },
     "BackupR backup": {
       "commandName": "Project",
