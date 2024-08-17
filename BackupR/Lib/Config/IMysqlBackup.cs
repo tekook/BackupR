@@ -18,5 +18,7 @@ namespace Tekook.BackupR.Lib.Config
         public bool Routines { get; }
         public bool Triggers { get; }
         public string Username { get; }
+        public int Port { get; }
+        public bool SkipLockTables { get; }
     }
 }

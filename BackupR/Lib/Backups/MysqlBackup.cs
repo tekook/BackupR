@@ -113,6 +113,7 @@ namespace Tekook.BackupR.Lib.Backups
                 x.UserID = this.Settings.Username;
                 x.Password = this.Settings.Password;
                 x.Server = this.Settings.Host;
+                x.Port = (uint)this.Settings.Port;
                 List<string> dbs = new();
                 using (var connection = new MySqlConnection(x.ToString()))
                 {
@@ -144,6 +145,14 @@ namespace Tekook.BackupR.Lib.Backups
             if (this.Settings.AddLocks)
             {
                 args.Add("--add-locks");
+            }
+            if (this.Settings.SkipLockTables)
+            {
+                args.Add("--skip-lock-tables");
+            }
+            if (this.Settings.Port != 0)
+            {
+                args.Add($"--port={this.Settings.Port}");
             }
             if (this.Settings.Events)
             {

@@ -1,0 +1,39 @@
+﻿{
+  "Name": "mariadb",
+  "Type": "Tekook.BackupR.Lib.Providers.FsProvider",
+  "StateFile": "state.json",
+  "Provider": {
+    "Path": "C:\\tmp\\data"
+  },
+  "Backup": {
+    "Folders": [],
+    "Commands": [],
+    "MysqlBackups": [
+      {
+        "Name": "Mysql-Backup",
+        "UploadPath": "mysql",
+        "UploadName": "mysql_$date.tar.gz",
+        "MysqlDumpPath": "C:\\tmp\\b\\mysql\\mysqldump.exe",
+        "Host": "maria-db.dev.local",
+        "Port": 13306,
+        "Username": "root",
+        "Password": "Docker_1337",
+        "PasswordViaEnvironment": true,
+        "Databases": [],
+        "FetchDatabases": true,
+        "Excludes": [
+          "information_schema",
+          "performance_schema"
+        ],
+        "AddLocks": true,
+        "Events": true,
+        "SkipLockTables":  true,
+        "FlushPrivileges": true,
+        "Routines": true,
+        "Triggers": true
+      }
+    ],
+    "TarBackups": []
+  },
+  "Containers": []
+}
