@@ -166,7 +166,10 @@ namespace Tekook.BackupR.Lib.Providers
         {
             if (this.Client == null)
             {
-                this.Client = new SftpClient(this.Config.Host, this.Config.Port ?? 22, this.Config.Username, this.Config.Password);
+                this.Client = new SftpClient(this.Config.Host, this.Config.Port ?? 22, this.Config.Username, this.Config.Password)
+                {
+                    KeepAliveInterval = new TimeSpan(0, 0, 30)
+                };
             }
             if (!this.Client.IsConnected)
             {
