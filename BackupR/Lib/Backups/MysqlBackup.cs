@@ -113,9 +113,12 @@ namespace Tekook.BackupR.Lib.Backups
                 {
                     UserID = this.Settings.Username,
                     Password = this.Settings.Password,
-                    Server = this.Settings.Host,
-                    Port = (uint)this.Settings.Port
+                    Server = this.Settings.Host
                 };
+                if (this.Settings.Port != 0)
+                {
+                    cs.Port = (uint)this.Settings.Port;
+                }
                 List<string> dbs = [];
                 using (var connection = new MySqlConnection(cs.ToString()))
                 {
@@ -177,9 +180,6 @@ namespace Tekook.BackupR.Lib.Backups
             {
                 args.Add("--triggers");
             }
-
-
-
 
             // Global Settings
             if (this.Settings.Port != 0)

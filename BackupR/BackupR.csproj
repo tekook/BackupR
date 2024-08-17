@@ -27,13 +27,13 @@
   <ItemGroup>
     <PackageReference Include="ByteSize" Version="2.1.2" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="FluentFTP" Version="50.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
+    <PackageReference Include="FluentFTP" Version="51.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="MySqlConnector" Version="2.3.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="NLog" Version="5.3.2" />
+    <PackageReference Include="NLog" Version="5.3.3" />
     <PackageReference Include="SharpCompress" Version="0.37.2" />
-    <PackageReference Include="SSH.NET" Version="2024.0.0" />
+    <PackageReference Include="SSH.NET" Version="2024.1.0" />
     <PackageReference Include="Tekook.VerbR" Version="0.0.3" />
     <PackageReference Include="Tekook.VerbR.Resolvers" Version="0.0.3" />
     <PackageReference Include="Tekook.VerbR.Validators" Version="0.0.3" />

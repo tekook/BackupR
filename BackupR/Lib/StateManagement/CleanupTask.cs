@@ -10,7 +10,7 @@
         /// <summary>
         /// Configuration <see cref="Config.IContainerConfig.MaxSize"/>
         /// </summary>
-        public string? MaxSizeConfig { get; set; } = null;
+        public string MaxSizeConfig { get; set; } = null;
 
         /// <summary>
         /// Number of deleted files base of container size.
