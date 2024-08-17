@@ -148,8 +148,8 @@ namespace Tekook.BackupR.Lib.Backups
             {
                 args.Add("--add-locks");
             }
-            if (this.Settings.SkipLockTables)
-            {
+            if (this.Settings.SkipLockTables || db == "mysql")
+            { // database "mysql" should always be locked
                 args.Add("--skip-lock-tables");
             }
             if (this.Settings.Port != 0)
