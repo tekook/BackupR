@@ -61,13 +61,13 @@ namespace Tekook.BackupR.Lib.Backups
                 var stderr = await process.StandardError.ReadToEndAsync();
                 if (process.ExitCode == 1)
                 {
-                    Logger.Warn("Tar Command Result: 'Some files differ' / {exitcode} - see logs for details", process.ExitCode);
+                    Logger.Warn("Tar result: 'Some files differ' / {exitcode} - see logs for details", process.ExitCode);
                     Logger.Debug("stdout: {stdout}", stdout);
                     Logger.Warn("stderr: {stderr}", stderr);
                 }
                 else
                 {
-                    Logger.Error("Tar command ran into an error (ExitCode: {exitcode} - see log for details", process.ExitCode);
+                    Logger.Error("Tar ran into an error (ExitCode: {exitcode} - see log for details", process.ExitCode);
                     Logger.Debug("stdout: {stdout}", stdout);
                     Logger.Error("stderr: {stderr}", stderr);
                     throw new BackupException(this, stderr);
