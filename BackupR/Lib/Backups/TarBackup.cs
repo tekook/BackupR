@@ -57,12 +57,21 @@ namespace Tekook.BackupR.Lib.Backups
             await process.WaitForExitAsync();
             if (process.ExitCode != 0)
             {
-                Logger.Error("Tar command did run unsuccesfully - see log for details");
                 var stdout = await process.StandardOutput.ReadToEndAsync();
                 var stderr = await process.StandardError.ReadToEndAsync();
-                Logger.Debug("stdout: {stdout}", stdout);
-                Logger.Error("stderr: {stderr}", stderr);
-                throw new BackupException(this, await process.StandardError.ReadToEndAsync());
+                if (process.ExitCode == 1)
+                {
+                    Logger.Warn("Tar Command Result: 'Some files differ' / {exitcode} - see logs for details", process.ExitCode);
+                    Logger.Debug("stdout: {stdout}", stdout);
+                    Logger.Warn("stderr: {stderr}", stderr);
+                }
+                else
+                {
+                    Logger.Error("Tar command ran into an error (ExitCode: {exitcode} - see log for details", process.ExitCode);
+                    Logger.Debug("stdout: {stdout}", stdout);
+                    Logger.Error("stderr: {stderr}", stderr);
+                    throw new BackupException(this, stderr);
+                }
             }
             this.BackupFile = new FileInfo(this.TempFile);
             return this.BackupFile;
