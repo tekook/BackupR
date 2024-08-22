@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
 
-namespace Tekook.BackupR.Lib.ProviderExtensions
+namespace Tekook.BackupR.Lib.Extensions
 {
     public static class ProviderExtensions
     {

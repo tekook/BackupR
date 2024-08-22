@@ -10,7 +10,7 @@ using Tekook.BackupR.Lib.Backups;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Exceptions;
-using Tekook.BackupR.Lib.ProviderExtensions;
+using Tekook.BackupR.Lib.Extensions;
 using Tekook.BackupR.Lib.StateManagement;
 using Tekook.VerbR.Resolvers;
 
