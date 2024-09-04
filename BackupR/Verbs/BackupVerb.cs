@@ -135,7 +135,7 @@ namespace Tekook.BackupR.Verbs
                 string path = this.Provider.Combine(this.Provider.RootPath, backup.UploadPath);
                 Logger.Info("Uploading backup as {filename} to {path}", name, path);
                 var container = await this.Provider.GetContainer(path);
-                await container.Upload(task.BackupFile, name);
+                await container.Upload(3, task.BackupFile, name, Logger);
                 Logger.Info("Upload finished");
             }
             else
