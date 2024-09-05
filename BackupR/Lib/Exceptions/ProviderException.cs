@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace Tekook.BackupR.Lib.Exceptions
 {
     internal class ProviderException : BaseException
     {
-        public ProviderException()
+        public ProviderException() : base()
         {
         }
 

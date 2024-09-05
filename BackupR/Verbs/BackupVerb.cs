@@ -46,6 +46,7 @@ namespace Tekook.BackupR.Verbs
             }
             catch (ProviderException e)
             {
+                this.State.Errors.Add(e);
                 this.State.HasProviderError = true;
                 LogException(e);
                 Logger.Warn("------ Backup could not be started! -------");
@@ -113,6 +114,7 @@ namespace Tekook.BackupR.Verbs
                     }
                     else
                     {
+                        sTask.Errors.Add(exception);
                         sTask.Success = false;
                         Logger.Error("------- Task: {backup_name} failed with errors. Backup has not been created. -------", setting.Name);
                     }

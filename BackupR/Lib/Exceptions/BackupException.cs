@@ -7,7 +7,7 @@ namespace Tekook.BackupR.Lib.Exceptions
     {
         public IBackupTask BackupTask { get; }
 
-        public BackupException(IBackupTask backupTask)
+        public BackupException(IBackupTask backupTask) : base()
         {
             this.BackupTask = backupTask ?? throw new ArgumentNullException(nameof(backupTask));
         }
