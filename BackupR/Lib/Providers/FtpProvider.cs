@@ -184,5 +184,13 @@ namespace Tekook.BackupR.Lib.Providers
                 await this.Client.Connect();
             }
         }
+
+        /// <inheritdoc/>
+#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
+        public async Task HandleException(Exception exception)
+#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
+        {
+            return;
+        }
     }
 }

@@ -34,14 +34,23 @@ namespace Tekook.BackupR.Lib.Extensions
                 {
                     logger?.Error("Caught exception while trying to validate provider. Error: {validation_error} | Try: {validation_try})", ex, tries + 1);
                     logger?.Error(ex);
+                    try
+                    {
+                        await provider.HandleException(ex);
+                    }
+                    catch
+                    {
+                        logger?.Error("Caught exception while letting provider handle the exception. Error: {handle_exception_error} | Try: {validation_try})", ex, tries + 1);
+                        logger?.Error(ex);
+                    }
                     if (tries == retries)
                     {
                         throw;
-                    } else
+                    }
+                    else
                     {
                         Thread.Sleep(waitBetweenRetries);
                     }
-
                 }
             }
         }

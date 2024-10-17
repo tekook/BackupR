@@ -1,5 +1,6 @@
 ﻿using NLog;
 using Renci.SshNet;
+using Renci.SshNet.Common;
 using Renci.SshNet.Sftp;
 using System;
 using System.IO;
@@ -178,6 +179,17 @@ namespace Tekook.BackupR.Lib.Providers
             if (!this.Client.IsConnected)
             {
                 this.Logger.Debug("Client is not connected -> Connect!");
+                await Task.Run(this.Client.Connect);
+            }
+        }
+
+        /// <inheritdoc/>
+        public async Task HandleException(Exception exception)
+        {
+            if (exception is SshConnectionException)
+            {
+                this.Logger.Debug("Caught SshConnectionException -> Force Reconnect client!");
+                this.Client.Disconnect();
                 await Task.Run(this.Client.Connect);
             }
         }
