@@ -1,4 +1,5 @@
-﻿using Renci.SshNet;
+﻿using NLog;
+using Renci.SshNet;
 using Renci.SshNet.Sftp;
 using System;
 using System.IO;
@@ -10,6 +11,8 @@ namespace Tekook.BackupR.Lib.Providers
 {
     public class SftpProvider : IProvider, IDisposable
     {
+        protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
+
         /// <inheritdoc/>
         public string RootPath => this.Config.Path;
 
@@ -170,9 +173,11 @@ namespace Tekook.BackupR.Lib.Providers
                 {
                     KeepAliveInterval = new TimeSpan(0, 0, 30)
                 };
+                this.Logger.Debug("Created new Client cause Client was null!");
             }
             if (!this.Client.IsConnected)
             {
+                this.Logger.Debug("Client is not connected -> Connect!");
                 await Task.Run(this.Client.Connect);
             }
         }
