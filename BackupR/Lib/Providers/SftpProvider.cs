@@ -140,6 +140,7 @@ namespace Tekook.BackupR.Lib.Providers
         /// <inheritdoc/>
         public async Task Upload(FileInfo file, IContainer target, string name = null)
         {
+            this.Client.Disconnect();
             await this.EnsureClientConnected();
             if (target.Provider != this)
             {
