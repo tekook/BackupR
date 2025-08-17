@@ -19,6 +19,10 @@
     "Cleanup - SFTP": {
       "commandName": "Project",
       "commandLineArgs": "cleanup --config=./Examples/sftp.json "
+    },
+    "mariadb backup": {
+      "commandName": "Project",
+      "commandLineArgs": "backup --config=./Examples/mariadb.json "
     }
   }
 }

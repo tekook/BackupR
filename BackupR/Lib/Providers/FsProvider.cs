@@ -6,7 +6,7 @@ using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Providers
 {
-    public class FsProvider : IProvider, IDisposable
+    public class FsProvider : BaseProvider, IProvider, IDisposable
     {
         /// <inheritdoc/>
         public string RootPath => this.Config.Path;

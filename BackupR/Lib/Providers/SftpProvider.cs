@@ -1,4 +1,6 @@
-﻿using Renci.SshNet;
+﻿using NLog;
+using Renci.SshNet;
+using Renci.SshNet.Common;
 using Renci.SshNet.Sftp;
 using System;
 using System.IO;
@@ -8,8 +10,10 @@ using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Providers
 {
-    public class SftpProvider : IProvider, IDisposable
+    public class SftpProvider : BaseProvider, IProvider, IDisposable
     {
+        protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
+
         /// <inheritdoc/>
         public string RootPath => this.Config.Path;
 
@@ -136,6 +140,8 @@ namespace Tekook.BackupR.Lib.Providers
         /// <inheritdoc/>
         public async Task Upload(FileInfo file, IContainer target, string name = null)
         {
+            this.Logger.Debug("Disconnect Client before upload");
+            this.Client.Disconnect();
             await this.EnsureClientConnected();
             if (target.Provider != this)
             {
@@ -166,10 +172,26 @@ namespace Tekook.BackupR.Lib.Providers
         {
             if (this.Client == null)
             {
-                this.Client = new SftpClient(this.Config.Host, this.Config.Port ?? 22, this.Config.Username, this.Config.Password);
+                this.Client = new SftpClient(this.Config.Host, this.Config.Port ?? 22, this.Config.Username, this.Config.Password)
+                {
+                    KeepAliveInterval = new TimeSpan(0, 0, 30)
+                };
+                this.Logger.Debug("Created new Client cause Client was null!");
             }
             if (!this.Client.IsConnected)
             {
+                this.Logger.Debug("Client is not connected -> Connect!");
+                await Task.Run(this.Client.Connect);
+            }
+        }
+
+        /// <inheritdoc/>
+        public override async Task HandleException(Exception exception)
+        {
+            if (exception is SshConnectionException)
+            {
+                this.Logger.Debug("Caught SshConnectionException -> Force Reconnect client!");
+                this.Client.Disconnect();
                 await Task.Run(this.Client.Connect);
             }
         }

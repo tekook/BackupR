@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
 
-namespace Tekook.BackupR.Lib.ProviderExtensions
+namespace Tekook.BackupR.Lib.Extensions
 {
     public static class ProviderExtensions
     {
@@ -34,14 +34,25 @@ namespace Tekook.BackupR.Lib.ProviderExtensions
                 {
                     logger?.Error("Caught exception while trying to validate provider. Error: {validation_error} | Try: {validation_try})", ex, tries + 1);
                     logger?.Error(ex);
+                    try
+                    {
+                        logger?.Debug("Routing exception to Provider.HandleException");
+                        await provider.HandleException(ex);
+                        logger?.Debug("Routing done.");
+                    }
+                    catch
+                    {
+                        logger?.Error("Caught exception while letting provider handle the exception. Error: {handle_exception_error} | Try: {validation_try})", ex, tries + 1);
+                        logger?.Error(ex);
+                    }
                     if (tries == retries)
                     {
                         throw;
-                    } else
+                    }
+                    else
                     {
                         Thread.Sleep(waitBetweenRetries);
                     }
-
                 }
             }
         }

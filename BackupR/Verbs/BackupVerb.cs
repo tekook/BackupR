@@ -10,7 +10,7 @@ using Tekook.BackupR.Lib.Backups;
 using Tekook.BackupR.Lib.Config;
 using Tekook.BackupR.Lib.Contracts;
 using Tekook.BackupR.Lib.Exceptions;
-using Tekook.BackupR.Lib.ProviderExtensions;
+using Tekook.BackupR.Lib.Extensions;
 using Tekook.BackupR.Lib.StateManagement;
 using Tekook.VerbR.Resolvers;
 
@@ -46,6 +46,7 @@ namespace Tekook.BackupR.Verbs
             }
             catch (ProviderException e)
             {
+                this.State.Errors.Add(e);
                 this.State.HasProviderError = true;
                 LogException(e);
                 Logger.Warn("------ Backup could not be started! -------");
@@ -113,6 +114,7 @@ namespace Tekook.BackupR.Verbs
                     }
                     else
                     {
+                        sTask.Errors.Add(exception);
                         sTask.Success = false;
                         Logger.Error("------- Task: {backup_name} failed with errors. Backup has not been created. -------", setting.Name);
                     }
@@ -135,7 +137,7 @@ namespace Tekook.BackupR.Verbs
                 string path = this.Provider.Combine(this.Provider.RootPath, backup.UploadPath);
                 Logger.Info("Uploading backup as {filename} to {path}", name, path);
                 var container = await this.Provider.GetContainer(path);
-                await container.Upload(task.BackupFile, name);
+                await container.Upload(3, task.BackupFile, name, Logger);
                 Logger.Info("Upload finished");
             }
             else
