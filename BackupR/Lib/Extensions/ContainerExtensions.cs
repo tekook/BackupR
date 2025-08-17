@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Tekook.BackupR.Lib.Contracts;
+using Tekook.BackupR.Lib.Providers;
 
 namespace Tekook.BackupR.Lib.Extensions
 {
@@ -32,7 +33,9 @@ namespace Tekook.BackupR.Lib.Extensions
                     logger?.Error(ex);
                     try
                     {
+                        logger?.Debug("Routing exception to Container.Provider.HandleException");
                         await container.Provider.HandleException(ex);
+                        logger?.Debug("Routing done.");
                     }
                     catch
                     {

@@ -36,7 +36,9 @@ namespace Tekook.BackupR.Lib.Extensions
                     logger?.Error(ex);
                     try
                     {
+                        logger?.Debug("Routing exception to Provider.HandleException");
                         await provider.HandleException(ex);
+                        logger?.Debug("Routing done.");
                     }
                     catch
                     {
