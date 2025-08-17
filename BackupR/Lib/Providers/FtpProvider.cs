@@ -9,7 +9,7 @@ using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Providers
 {
-    public class FtpProvider : IProvider, IDisposable
+    public class FtpProvider : BaseProvider, IProvider, IDisposable
     {
         /// <inheritdoc/>
         public string RootPath => this.Config.Path;
@@ -183,14 +183,6 @@ namespace Tekook.BackupR.Lib.Providers
             {
                 await this.Client.Connect();
             }
-        }
-
-        /// <inheritdoc/>
-#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
-        public async Task HandleException(Exception exception)
-#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
-        {
-            return;
         }
     }
 }

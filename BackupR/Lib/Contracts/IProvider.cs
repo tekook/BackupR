@@ -7,7 +7,7 @@ namespace Tekook.BackupR.Lib.Contracts
     /// <summary>
     /// Contract for a provider
     /// </summary>
-    public interface IProvider : IDisposable
+    public interface IProvider : IDisposable, IHandlesException
     {
         /// <summary>
         /// Path of the Root of this provider.
@@ -72,12 +72,5 @@ namespace Tekook.BackupR.Lib.Contracts
         /// </summary>
         /// <exception cref="Exceptions.ProviderException">Thrown if any error is encounterd while connecting to the provider.</exception>
         Task Validate();
-
-        /// <summary>
-        /// Lets the Provider implement some custom logic for handling exceptions.
-        /// </summary>
-        /// <param name="exception">The Exception which got caught</param>
-        /// <returns></returns>
-        Task HandleException(Exception exception);
     }
 }

@@ -10,7 +10,7 @@ using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Providers
 {
-    public class SftpProvider : IProvider, IDisposable
+    public class SftpProvider : BaseProvider, IProvider, IDisposable
     {
         protected ILogger Logger { get; set; } = LogManager.GetCurrentClassLogger();
 
@@ -185,7 +185,7 @@ namespace Tekook.BackupR.Lib.Providers
         }
 
         /// <inheritdoc/>
-        public async Task HandleException(Exception exception)
+        public override async Task HandleException(Exception exception)
         {
             if (exception is SshConnectionException)
             {

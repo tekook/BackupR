@@ -6,7 +6,7 @@ using Tekook.BackupR.Lib.Exceptions;
 
 namespace Tekook.BackupR.Lib.Providers
 {
-    public class FsProvider : IProvider, IDisposable
+    public class FsProvider : BaseProvider, IProvider, IDisposable
     {
         /// <inheritdoc/>
         public string RootPath => this.Config.Path;
@@ -153,13 +153,6 @@ namespace Tekook.BackupR.Lib.Providers
             {
                 throw new ProviderException($"Target directory does not exist: {RootPath}");
             }
-        }
-        /// <inheritdoc/>
-#pragma warning disable CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
-        public async Task HandleException(Exception exception)
-#pragma warning restore CS1998 // Bei der asynchronen Methode fehlen "await"-Operatoren. Die Methode wird synchron ausgeführt.
-        {
-            return;
         }
     }
 }
