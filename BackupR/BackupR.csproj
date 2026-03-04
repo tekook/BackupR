@@ -25,6 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AWSSDK.S3" Version="4.0.18.7" />
     <PackageReference Include="ByteSize" Version="2.1.2" />
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="FluentFTP" Version="53.0.2" />
