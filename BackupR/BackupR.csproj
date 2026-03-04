@@ -6,14 +6,14 @@
     <RootNamespace>Tekook.BackupR</RootNamespace>
     <StartupObject>Tekook.BackupR.Program</StartupObject>
     <AssemblyName>BackupR</AssemblyName>
-    <Version>0.0.3</Version>
+    <Version>0.0.4</Version>
     <Description>Backup Generator and Manager</Description>
-    <Copyright>Julian Tekook 2020-2025</Copyright>
+    <Copyright>Julian Tekook 2020-2026</Copyright>
     <PackageProjectUrl>https://github.com/tekook/BackupR</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tekook/BackupR.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>backupr,backup,manager,generator,backupcreator</PackageTags>
-    <PackageReleaseNotes>Initial Version</PackageReleaseNotes>
+    <PackageReleaseNotes>S3-Compatible Object Storage</PackageReleaseNotes>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <Authors>Julian Tekook</Authors>
   </PropertyGroup>
